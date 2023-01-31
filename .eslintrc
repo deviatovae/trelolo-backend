@@ -1,0 +1,38 @@
+{
+    "root": true,
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "airbnb-typescript/base",
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "plugins": [
+      "import",
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "@typescript-eslint/no-explicit-any": 2,
+      "no-debugger": "off",
+      "no-console": 0,
+      "class-methods-use-this": "off",
+      "no-plusplus": "off",
+      "max-len": ["warn", { "code": 170 }],
+      "indent": "off",
+      "@typescript-eslint/indent": "off",
+      "import/prefer-default-export": "off",
+      "no-param-reassign": ["error", {
+      "props": false
+      }],
+      "comma-dangle": "off",
+      "@typescript-eslint/comma-dangle": ["error", "only-multiline"]
+  },
+  "ignorePatterns": ["*config.js"]
+  }
