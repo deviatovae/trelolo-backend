@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { router } from './routes';
 
 dotenv.config();
 
@@ -10,6 +11,5 @@ app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
 
-app.get('/', (req, res) => {
-    res.send('Hello world!');
-});
+app.use(express.json());
+app.use(router);
