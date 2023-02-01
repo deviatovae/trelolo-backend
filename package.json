@@ -10,11 +10,14 @@
     "start": "concurrently \"eslint . --ext .ts\" \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "dependencies": {
+    "@prisma/client": "^4.9.0",
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-validator": "^6.14.3"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.16",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
@@ -24,6 +27,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
     "nodemon": "^2.0.20",
+    "prisma": "^4.9.0",
     "typescript": "^4.9.5"
   }
 }
