@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
-import { getUserByToken } from '../controller/user';
+import { getUserId, isTokenValid } from '../service/jwt';
+import { getUserById } from '../repository/userRepository';
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('X-TOKEN');
     if (token) {
-        req.user = await getUserByToken(token);
+        if (!isTokenValid(token)) {
+            return null;
+        }
+
+        req.user = await getUserById(getUserId(token));
     }
 
     if (!token || !req.user) {

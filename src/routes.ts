@@ -3,18 +3,13 @@ import { createBoard, createBoardValidation, getBoard, getBoards } from './contr
 import { authorize, register } from './controller/user';
 import middleware from './middleware/middleware';
 
-const authorizeRouter = Router();
-authorizeRouter.use(middleware.auth);
+export const router = Router();
 
-authorizeRouter.get('/boards', getBoards);
-authorizeRouter.get('/boards/:id', getBoard);
-authorizeRouter.post('/boards', createBoardValidation, createBoard);
+router.post('/user/register', ...register);
+router.post('/user/authorize', ...authorize);
 
-const anonymousRouter = Router();
-anonymousRouter.post('/user/register', ...register);
-anonymousRouter.post('/user/authorize', ...authorize);
+router.use(middleware.auth);
 
-export const routers = [
-    authorizeRouter,
-    anonymousRouter,
-];
+router.get('/boards', getBoards);
+router.get('/boards/:id', getBoard);
+router.post('/boards', createBoardValidation, createBoard);
