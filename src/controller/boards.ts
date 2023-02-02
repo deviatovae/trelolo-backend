@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import { getUserByToken } from './user';
 
 type Board = {
     id: number,
@@ -12,7 +13,7 @@ const boards: Board[] = [
     { id: 2, color: 'black' },
 ];
 
-export const getBoards = (req: Request, res: Response) => {
+export const getBoards = async (req: Request, res: Response) => {
     res.json(boards);
 };
 

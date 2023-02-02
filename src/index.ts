@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { router } from './routes';
+import { routers } from './routes';
 
 dotenv.config();
 
@@ -12,4 +12,4 @@ app.listen(port, () => {
 });
 
 app.use(express.json());
-app.use(router);
+app.use(...routers);

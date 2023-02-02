@@ -1,8 +1,20 @@
 import { Router } from 'express';
 import { createBoard, createBoardValidation, getBoard, getBoards } from './controller/boards';
+import { authorize, register } from './controller/user';
+import middleware from './middleware/middleware';
 
-export const router = Router();
+const authorizeRouter = Router();
+authorizeRouter.use(middleware.auth);
 
-router.get('/boards', getBoards);
-router.get('/boards/:id', getBoard);
-router.post('/boards', createBoardValidation, createBoard);
+authorizeRouter.get('/boards', getBoards);
+authorizeRouter.get('/boards/:id', getBoard);
+authorizeRouter.post('/boards', createBoardValidation, createBoard);
+
+const anonymousRouter = Router();
+anonymousRouter.post('/user/register', ...register);
+anonymousRouter.post('/user/authorize', ...authorize);
+
+export const routers = [
+    authorizeRouter,
+    anonymousRouter,
+];
