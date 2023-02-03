@@ -29,7 +29,7 @@ export const register = [
     }
 ];
 
-export const authorize = [
+export const login = [
     body('email').isEmail(),
     body('password').notEmpty(),
     async (req: Request, res: Response) => {
@@ -38,7 +38,7 @@ export const authorize = [
         const isPasswordMatch = user?.password === passwordHash;
 
         if (!user || !isPasswordMatch) {
-            return res.status(403).json({ error: 'email/password is incorrect' });
+            return res.status(403).json({ error: 'Email or password is incorrect' });
         }
 
         res.json({
