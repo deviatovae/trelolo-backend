@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { getUserId, isTokenValid } from '../service/jwt';
 import { getUserById } from '../repository/userRepository';
+import { validationResult } from 'express-validator';
+import StatusCode from 'status-code-enum';
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('X-TOKEN');
@@ -13,7 +15,16 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (!token || !req.user) {
-        return res.status(400).json({ error: 'User is not authorized' });
+        return res.status(401).json({ error: 'User is not authorized' });
+    }
+
+    next();
+};
+
+export const validateResult = (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(StatusCode.ClientErrorBadRequest).json({ errors: errors.array() });
     }
 
     next();

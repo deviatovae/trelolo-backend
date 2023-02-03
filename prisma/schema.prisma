@@ -18,3 +18,10 @@ model User {
   password String
   salt     String
 }
+
+model Board {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  order    Int
+  ownerId  String
+}

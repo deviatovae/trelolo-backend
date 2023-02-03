@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
+import StatusCode from 'status-code-enum';
 
 type Board = {
     id: number,
@@ -21,7 +22,7 @@ export const getBoard = (req: Request, res: Response) => {
     const board = boards.find((el) => el.id === id);
 
     if (!board) {
-        res.status(404).json({ errors: ['Not found'] });
+        res.status(StatusCode.ClientErrorNotFound).json({ error: 'Not found' });
         return;
     }
     res.json(board);
@@ -30,11 +31,6 @@ export const getBoard = (req: Request, res: Response) => {
 export const createBoardValidation = body('color').isLength({ min: 3 });
 
 export const createBoard = (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
     lastBoardId += 1;
     const board = {
         id: lastBoardId,
