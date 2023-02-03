@@ -4,9 +4,12 @@ import bcrypt from 'bcrypt';
 import { createToken } from '../service/jwt';
 import { createUser, getUserByEmail } from '../repository/userRepository';
 import { validateResult } from '../middleware/middleware';
+import StatusCode from 'status-code-enum';
 
 export const register = [
-    body('email').isEmail(),
+    body('email').isEmail().bail().custom(async (email: string) => {
+        return (await getUserByEmail(email)) ? Promise.reject('E-mail already in use') : null;
+    }),
     body('name')
         .notEmpty().withMessage('Should not be empty').bail()
         .isLength({ min: 2 }).withMessage('Should contain at least 2 symbols'),
@@ -19,8 +22,7 @@ export const register = [
             const passwordHash = await bcrypt.hash(password, salt);
             await createUser(email, name, passwordHash, salt);
         } catch {
-            res.status(500).json({ errors: ['Database error'] });
-            return;
+            return res.status(StatusCode.ServerErrorInternal).json({ error: 'Database error' });
         }
 
         res.json({ result: true });
