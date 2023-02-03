@@ -74,11 +74,10 @@ Authorize user and return JWT token
         "password": "test"
     }
     ```
-- `email` should be valid
-- `password`
 ---
 
 * **Success response** - `200 OK`
+
   ```json
   {
     "result": true,
@@ -86,6 +85,7 @@ Authorize user and return JWT token
   }
   ```
 * **Failure response** - `403 Forbidden`
+
   ```json
   {
     "error": "Email or password is incorrect"
