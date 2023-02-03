@@ -15,6 +15,11 @@ Create a new user
 
 <details>
 
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
 * **Body**
     ```json
      {
@@ -57,6 +62,11 @@ Authorize user and return JWT token
 
 <details>
 
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+  
 * **Body**
     ```json
      {
