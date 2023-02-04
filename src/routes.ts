@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { createBoard, createBoardValidation, getBoard, getBoards } from './controller/boards';
 import { login, register } from './controller/user';
 import middleware from './middleware/middleware';
+import { createProject, deleteProject, getProjects, updateProject } from './controller/project';
 
 export const router = Router();
 
@@ -10,6 +10,7 @@ router.post('/user/login', ...login);
 
 router.use(middleware.auth);
 
-router.get('/boards', getBoards);
-router.get('/boards/:id', getBoard);
-router.post('/boards', createBoardValidation, createBoard);
+router.get('/projects', ...getProjects);
+router.post('/projects', ...createProject);
+router.patch('/projects/:id', ...updateProject);
+router.delete('/projects/:id', ...deleteProject);

@@ -7,3 +7,8 @@ export type Result<D, E> = {
 export type LoginResult = {
     token: string
 };
+
+export type ListResult<T> = {
+    items: T[]
+    count: number
+};
