@@ -7,6 +7,53 @@ https://trelolo.onrender.com
     - [Register (sign up)](#register)
     - [Log in](#log-in)
 
+## What responses look like
+
+<details>
+
+* **Successful**
+  ```
+  {
+      "result": true, // always "true" if successful
+      "data": {}      // or []
+      "errors": []    // always "empty" if result is successful
+  }
+  ```
+
+* **Failed (validation errors)**
+
+  **Status code:** `400`
+  ```
+  {
+      "result": false,
+      "data": null // always "null" if failed
+      "errors": [
+        {
+          "value": "test2@gmail.com",
+          "msg": "E-mail already in use",
+          "param": "email",
+          "location": "body"
+        },
+        ...
+      ]
+  }
+  ```
+
+* **Failed (custom errors)**
+
+  **Status codes:** other than `200`, `400`
+  ```
+  {
+      "result": false,
+      "data": null // always "null" if failed
+      "errors": [
+        "User is not authorized" // mostly contains single error
+      ]
+  }
+  ```
+
+</details>
+
 **Register**
 ----
 Create a new user
@@ -36,15 +83,23 @@ Create a new user
 * **Success response** - `200 OK`
   ```json
   {
-    "result": true  
+    "result": true,
+    "data": {
+        "id": "63de8d5215fc893c6f1e5dbc",
+        "name": "Test",
+        "email": "test5@gmail.com"
+    },
+    "errors": []
   }
   ```
 * **Failure response** - `400 Bad Request`
   ```json
   {
+    "result": false,
+    "data": null,
     "errors": [
         {
-            "value": "test@email",
+            "value": "test@gmail",
             "msg": "Invalid value",
             "param": "email",
             "location": "body"
@@ -81,14 +136,21 @@ Authorize user and return JWT token
   ```json
   {
     "result": true,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJpZCI6IjYzZGQxZDMzMjM4YWI0NGMwZGU1NGExMiIsImlvdCI6MTY3NTQzNTQ4NTIwNH0=.ZzLHFnYu2Z89Finv4mRjAzheo87oBqkrJd0hIcBfg+0="
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJpZCI6IjYzZGQxZDMzMjM4YWI0NGMwZGU1NGExMiIsImlvdCI6MTY3NTQzNTQ4NTIwNH0=.ZzLHFnYu2Z89Finv4mRjAzheo87oBqkrJd0hIcBfg+0="
+    },
+    "errors": []
   }
   ```
 * **Failure response** - `403 Forbidden`
 
   ```json
   {
-    "error": "Email or password is incorrect"
+    "result": false,
+    "data": null,
+    "errors": [
+        "Email or password is incorrect"
+    ]
   }
   ```
 </details>
