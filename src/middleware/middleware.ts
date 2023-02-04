@@ -11,11 +11,15 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
             return null;
         }
 
-        req.user = await getUserById(getUserId(token));
+        try {
+            req.user = await getUserById(getUserId(token));
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     if (!token || !req.user) {
-        return res.status(401).json({ error: 'User is not authorized' });
+        return res.status(StatusCode.ClientErrorUnauthorized).json({ error: 'User is not authorized' });
     }
 
     next();
