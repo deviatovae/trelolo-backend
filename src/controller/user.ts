@@ -7,7 +7,7 @@ import { validateResult } from '../middleware/middleware';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapResult } from '../utils/resWrapper';
 import { User } from '@prisma/client';
-import { LoginResult } from '../types/types';
+import { GetUserResult, LoginResult } from '../types/types';
 
 export const register = [
     body('email').isEmail().bail().custom(async (email: string) => {
@@ -25,7 +25,11 @@ export const register = [
             const passwordHash = await bcrypt.hash(password, salt);
             const user = await createUser(email, name, passwordHash, salt);
 
-            return res.json(wrapResult<User>(user));
+            return res.json(wrapResult<GetUserResult>({
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }));
         } catch {
             return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
         }

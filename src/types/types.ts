@@ -4,6 +4,12 @@ export type Result<D, E> = {
     errors: E[]
 };
 
+export type GetUserResult = {
+    id: string
+    email: string
+    name: string
+};
+
 export type LoginResult = {
     token: string
 };
