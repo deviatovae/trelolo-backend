@@ -6,6 +6,11 @@ https://trelolo.onrender.com
 - **User**
     - [Register (sign up)](#register)
     - [Log in](#log-in)
+- **Projects**
+  - [Get list](#get-projects)
+  - [Create](#create-project)
+  - [Update](#update-project)
+  - [Delete](#delete-project)
 
 ## What responses look like
 
@@ -165,6 +170,8 @@ Authorize user and return JWT token
 ----
 Endpoints to manage projects
 
+**Get projects**
+---
 `GET` **/projects**
 
 Returns all projects where the user is either an owner or a member 
@@ -203,6 +210,8 @@ Returns all projects where the user is either an owner or a member
 
 ---
 
+**Create project**
+---
 `POST` **/projects**
 
 Create new project
@@ -255,6 +264,8 @@ Create new project
 
 ---
 
+**Update project**
+---
 `PATCH` **/projects/:id**
 
 Update project
@@ -325,6 +336,8 @@ Update project
 
 ---
 
+**Delete project**
+---
 `DELETE` **/projects/:id**
 
 Delete project
