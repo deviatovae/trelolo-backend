@@ -6,7 +6,6 @@ import { createUser, getUserByEmail } from '../repository/userRepository';
 import { validateResult } from '../middleware/middleware';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapResult } from '../utils/resWrapper';
-import { User } from '@prisma/client';
 import { GetUserResult, LoginResult } from '../types/types';
 
 export const register = [

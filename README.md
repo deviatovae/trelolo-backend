@@ -54,6 +54,8 @@ https://trelolo.onrender.com
 
 </details>
 
+---
+
 **Register**
 ----
 Create a new user
@@ -109,6 +111,8 @@ Create a new user
   ```
 </details>
 
+---
+
 **Log in**
 ----
 Authorize user and return JWT token
@@ -154,3 +158,213 @@ Authorize user and return JWT token
   }
   ```
 </details>
+
+---
+
+**Projects**
+----
+Endpoints to manage projects
+
+`GET` **/projects**
+
+Returns all projects where the user is either an owner or a member 
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "items": [
+            {
+                "id": "63dd7e968d6ad64745e15a03",
+                "name": "Common project",
+                "ownerId": "63dd1d33238ab44c0de54a12"
+            },
+            {
+                "id": "63de890018c5a3eb2107f6c4",
+                "name": "My own project",
+                "ownerId": "63dd1d33238ab44c0de54a12"
+            }
+        ],
+        "count": 2
+    },
+    "errors": []
+  }
+  ```
+</details>
+
+---
+
+`POST` **/projects**
+
+Create new project
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Body**
+    ```json
+    {
+      "name": "My own project"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63de890018c5a3eb2107f6c4",
+        "name": "My own project",
+        "ownerId": "63dd1d33238ab44c0de54a12"
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** - `400 Bad Request`
+
+  ```json
+  {
+    "result": false,
+    "data": null,
+    "errors": [
+        {
+            "value": "",
+            "msg": "Invalid value",
+            "param": "name",
+            "location": "body"
+        }
+    ]
+  }
+  ```
+</details>
+
+---
+
+`PATCH` **/projects/:id**
+
+Update project
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+  * **Path param**
+    * :id - `string`
+      
+      e.g: `/projects/63de890018c5a3eb2107f6c4`
+
+
+* **Body**
+    ```json
+    {
+      "name": "My new project name"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63de890018c5a3eb2107f6c4",
+        "name": "My new project name",
+        "ownerId": "63dd1d33238ab44c0de54a12"
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** 
+
+    - `400 Bad Request`
+
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+          {
+              "value": "",
+              "msg": "Invalid value",
+              "param": "name",
+              "location": "body"
+          }
+      ]
+    }
+    ```
+    - `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Project is not found"
+      ]
+    }
+    ```
+</details>
+
+---
+
+`DELETE` **/projects/:id**
+
+Delete project
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Path param**
+  * :id - `string`
+
+    e.g: `/projects/63de890018c5a3eb2107f6c4`
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63de890018c5a3eb2107f6c4",
+        "name": "My new project name",
+        "ownerId": "63dd1d33238ab44c0de54a12"
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Project is not found"
+      ]
+    }
+    ```
+</details>
+
+---
