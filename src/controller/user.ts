@@ -5,6 +5,9 @@ import { createToken } from '../service/jwt';
 import { createUser, getUserByEmail } from '../repository/userRepository';
 import { validateResult } from '../middleware/middleware';
 import StatusCode from 'status-code-enum';
+import { wrapError, wrapResult } from '../utils/resWrapper';
+import { User } from '@prisma/client';
+import { LoginResult } from '../types/types';
 
 export const register = [
     body('email').isEmail().bail().custom(async (email: string) => {
@@ -20,12 +23,12 @@ export const register = [
             const { email, name, password }: { email: string; name: string, password: string } = req.body;
             const salt = await bcrypt.genSalt(8);
             const passwordHash = await bcrypt.hash(password, salt);
-            await createUser(email, name, passwordHash, salt);
-        } catch {
-            return res.status(StatusCode.ServerErrorInternal).json({ error: 'Database error' });
-        }
+            const user = await createUser(email, name, passwordHash, salt);
 
-        res.json({ result: true });
+            return res.json(wrapResult<User>(user));
+        } catch {
+            return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
+        }
     }
 ];
 
@@ -38,12 +41,11 @@ export const login = [
         const isPasswordMatch = user?.password === passwordHash;
 
         if (!user || !isPasswordMatch) {
-            return res.status(403).json({ error: 'Email or password is incorrect' });
+            return res.status(StatusCode.ClientErrorForbidden).json(wrapError('Email or password is incorrect'));
         }
 
-        res.json({
-            result: true,
+        return res.json(wrapResult<LoginResult>({
             token: createToken(user.id)
-        });
+        }));
     }
 ];
