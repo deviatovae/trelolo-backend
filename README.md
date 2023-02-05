@@ -381,3 +381,206 @@ Delete project
 </details>
 
 ---
+**Sections**
+----
+Endpoints to manage sections
+
+**Get sections**
+---
+`GET` **/projects/:projectId/sections**
+
+Returns all sections belonging to the specific project
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "items": [
+            {
+                "id": "63debada0adfc89a239a915b",
+                "projectId": "63dd7e968d6ad64745e15a03",
+                "name": "ToDo",
+                "position": 1
+            },
+            {
+                "id": "63debae70adfc89a239a915c",
+                "projectId": "63dd7e968d6ad64745e15a03",
+                "name": "In Progress",
+                "position": 2
+            },
+            {
+                "id": "63debb2d0adfc89a239a915d",
+                "projectId": "63dd7e968d6ad64745e15a03",
+                "name": "Done",
+                "position": 3
+            }
+        ],
+        "count": 3
+    },
+    "errors": []
+  }
+  ```
+</details>
+
+---
+
+**Create section**
+---
+`POST` **/projects/:projectId/sections**
+
+Create new section
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Body**
+    ```json
+    {
+      "name": "Do tomorrow"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63dfa9d3dd681faea7c06254",
+        "projectId": "63dd7e968d6ad64745e15a03",
+        "name": "Do tomorrow",
+        "position": 4
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** - `400 Bad Request`
+
+  ```json
+  {
+    "result": false,
+    "data": null,
+    "errors": [
+        {
+            "msg": "Name should not be empty",
+            "param": "name",
+            "location": "body"
+        }
+    ]
+  }
+  ```
+</details>
+
+---
+
+**Update section**
+---
+`PATCH` **/projects/:projectId/sections/:sectionId**
+
+Update section
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Path param**
+  * :projectId - `string`
+  * :sectionId - `string`
+
+    e.g: `/projects/63de890018c5a3eb2107f6c4/sections/63debada0adfc89a239a915b`
+
+
+* **Body**
+
+    * All fields are optional
+    ```json
+    {
+      "name": "My new section name",
+      "position": 1
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63debada0adfc89a239a915b",
+        "projectId": "63de890018c5a3eb2107f6c4",
+        "name": "My new section name",
+        "position": 1
+    },
+    "errors": []
+  }
+  ```
+</details>
+
+---
+
+**Delete section**
+---
+`DELETE` **/projects/:projectId/sections/:sectionId**
+
+Delete section
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Path param**
+  * :projectId - `string`
+  * :sectionId - `string`
+
+    e.g: `/projects/63dd7e968d6ad64745e15a03/sections/63debb3a0adfc89a239a915e`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63debb3a0adfc89a239a915e",
+        "projectId": "63dd7e968d6ad64745e15a03",
+        "name": "My new section",
+        "position": 0
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Project is not found"
+      ]
+    }
+    ```
+</details>
+
+---
