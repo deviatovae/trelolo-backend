@@ -276,13 +276,6 @@ Update project
 
   - **Content-Type:** `application/json`
 
-
-  * **Path param**
-    * :id - `string`
-      
-      e.g: `/projects/63de890018c5a3eb2107f6c4`
-
-
 * **Body**
     ```json
     {
@@ -348,11 +341,6 @@ Delete project
 
   - **Content-Type:** `application/json`
 
-
-* **Path param**
-  * :id - `string`
-
-    e.g: `/projects/63de890018c5a3eb2107f6c4`
 ---
 
 * **Success response** - `200 OK`
@@ -389,7 +377,7 @@ Endpoints to manage sections
 ---
 `GET` **/projects/:projectId/sections**
 
-Returns all sections belonging to the specific project
+Returns all sections belonging to the specified project
 
 <details>
 
@@ -489,7 +477,7 @@ Create new section
 
 **Update section**
 ---
-`PATCH` **/projects/:projectId/sections/:sectionId**
+`PATCH` **/sections/:sectionId**
 
 Update section
 
@@ -498,14 +486,6 @@ Update section
 * **Headers**
 
   - **Content-Type:** `application/json`
-
-
-* **Path param**
-  * :projectId - `string`
-  * :sectionId - `string`
-
-    e.g: `/projects/63de890018c5a3eb2107f6c4/sections/63debada0adfc89a239a915b`
-
 
 * **Body**
 
@@ -538,7 +518,7 @@ Update section
 
 **Delete section**
 ---
-`DELETE` **/projects/:projectId/sections/:sectionId**
+`DELETE` **/sections/:sectionId**
 
 Delete section
 
@@ -547,13 +527,6 @@ Delete section
 * **Headers**
 
   - **Content-Type:** `application/json`
-
-
-* **Path param**
-  * :projectId - `string`
-  * :sectionId - `string`
-
-    e.g: `/projects/63dd7e968d6ad64745e15a03/sections/63debb3a0adfc89a239a915e`
 
 ---
 
