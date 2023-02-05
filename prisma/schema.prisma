@@ -53,10 +53,11 @@ model Task {
   section     Section     @relation(fields: [sectionId], references: [id])
   sectionId   String      @db.ObjectId
   name        String
-  asignees    Task2User[]
-  description String
-  dueDate     DateTime
-  isCompleted Boolean
+  position    Int
+  assignees    Task2User[]
+  description String?
+  dueDate     DateTime?
+  isCompleted Boolean     @default(false)
 }
 
 model Task2User {

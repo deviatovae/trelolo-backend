@@ -57,4 +57,18 @@ export class SectionRepository {
             where: { id }
         });
     }
+
+    static async getSectionByIdAndUserId(sectionId: string, userId: string) {
+        return prisma.section.findFirst({
+            where: {
+                id: sectionId,
+                project: {
+                    OR: [
+                        { ownerId: userId },
+                        { members: { some: { userId } } }
+                    ]
+                }
+            }
+        });
+    }
 }

@@ -18,3 +18,15 @@ export type ListResult<T> = {
     items: T[]
     count: number
 };
+
+export type UpdateTaskRequestParams = {
+    taskId: string
+};
+
+export type UpdateTaskRequestBody = {
+    name?: string
+    position?: number
+    description?: string
+    dueDate?: string
+    isCompleted?: boolean
+};
