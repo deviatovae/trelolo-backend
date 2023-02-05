@@ -17,7 +17,14 @@ import {
     updateSection,
     updateSectionValidation
 } from './controller/section';
-import { createTask, deleteTask, getTasks, updateTask, updateTaskValidation } from './controller/task';
+import {
+    createTask,
+    createTaskValidation,
+    deleteTask,
+    getTasks,
+    updateTask,
+    updateTaskValidation
+} from './controller/task';
 import { wrapHandler } from './utils/handlerWrapper';
 
 export const router = Router();
@@ -38,6 +45,6 @@ router.patch('/sections/:sectionId', ...updateSectionValidation, wrapHandler(upd
 router.delete('/sections/:sectionId', wrapHandler(deleteSection));
 
 router.get('/sections/:sectionId/tasks', wrapHandler(getTasks));
-router.post('/sections/:sectionId/tasks', ...updateTaskValidation, wrapHandler(createTask));
+router.post('/sections/:sectionId/tasks', ...createTaskValidation, wrapHandler(createTask));
 router.patch('/tasks/:taskId', ...updateTaskValidation, wrapHandler(updateTask));
 router.delete('/tasks/:taskId', wrapHandler(deleteTask));

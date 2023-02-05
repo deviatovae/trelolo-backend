@@ -11,6 +11,16 @@ https://trelolo.onrender.com
   - [Create](#create-project)
   - [Update](#update-project)
   - [Delete](#delete-project)
+- **Sections**
+  - [Get list](#get-sections)
+  - [Create](#create-section)
+  - [Update](#update-section)
+  - [Delete](#delete-section)
+- **Tasks**
+  - [Get list](#get-tasks)
+  - [Create](#create-task)
+  - [Update](#update-task)
+  - [Delete](#delete-task)
 
 ## What responses look like
 
@@ -551,6 +561,196 @@ Delete section
       "data": null,
       "errors": [
         "Project is not found"
+      ]
+    }
+    ```
+</details>
+
+---
+
+---
+**Tasks**
+----
+Endpoints to manage tasks
+
+**Get tasks**
+---
+`GET` **/sections/:sectionId/tasks**
+
+Returns all tasks belonging to the specified section
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "items": [
+            {
+                "id": "63e010ee9f16c8179a251b61",
+                "sectionId": "63debada0adfc89a239a915b",
+                "name": "To infinity and beyond",
+                "position": 1,
+                "description": null,
+                "dueDate": null,
+                "isCompleted": false
+            }
+        ],
+        "count": 1
+    },
+    "errors": []
+  }
+  ```
+</details>
+
+---
+
+**Create task**
+---
+`POST` **/sections/:sectionId/tasks**
+
+Create new task
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Body**
+    ```json
+    {
+    "name": "To infinity and beyond"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e010ee9f16c8179a251b61",
+        "sectionId": "63debada0adfc89a239a915b",
+        "name": "To infinity and beyond",
+        "position": 1,
+        "description": null,
+        "dueDate": null,
+        "isCompleted": false
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** - `400 Bad Request`
+
+  ```json
+  {
+    "result": false,
+    "data": null,
+    "errors": [
+        {
+            "msg": "Name should not be empty",
+            "param": "name",
+            "location": "body"
+        }
+    ]
+  }
+  ```
+</details>
+
+---
+
+**Update task**
+---
+`PATCH` **/tasks/:taskId**
+
+Update task
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+* **Body**
+
+  * All fields are optional
+    ```json
+    {
+    "name": "To infinity and beyond",
+    "position": 1,
+    "description": "Buzz Lighter!",
+    "dueDate": "2100-02-06T06:34:56.000Z",
+    "isCompleted": false
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e010ee9f16c8179a251b61",
+        "sectionId": "63debada0adfc89a239a915b",
+        "name": "To infinity and beyond",
+        "position": 1,
+        "description": "Buzz Lighter!",
+        "dueDate": "2100-02-06T06:34:56.000Z",
+        "isCompleted": false
+    },
+    "errors": []
+  }
+  ```
+</details>
+
+---
+
+**Delete task**
+---
+`DELETE` **/tasks/:taskId**
+
+Delete task
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63debb3a0adfc89a239a915e",
+        "sectionId": "63dd7e968d6ad64745e15a03",
+        "name": "My new task",
+        "position": 0
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Task is not found"
       ]
     }
     ```
