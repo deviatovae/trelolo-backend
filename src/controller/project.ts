@@ -16,65 +16,47 @@ const getUserProjectByReq = async (req: Request): Promise<Project | null> => {
 
 export const getProjects = async (req: Request, res: Response) => {
         const userId = getUserIdByReq(req);
+        const projects = await ProjectRepository.getProjectsByUserId(userId);
 
-        try {
-            const projects = await ProjectRepository.getProjectsByUserId(userId);
-            return res.json(wrapListResult<Project>(projects));
-        } catch {
-            return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
-        }
+        return res.json(wrapListResult<Project>(projects));
     }
 ;
 
-export const createProject = [
+export const createProjectValidation = [
     body('name').notEmpty(),
     validateResult,
-    async (req: Request, res: Response) => {
-        const userId = getUserIdByReq(req);
-
-        try {
-            const { name }: { name: string } = req.body;
-            const project = await ProjectRepository.createProject(name, userId);
-
-            return res.json(wrapResult<Project>(project));
-        } catch {
-            return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
-        }
-    }
 ];
+export const createProject = async (req: Request, res: Response) => {
+    const userId = getUserIdByReq(req);
+    const { name }: { name: string } = req.body;
+    const project = await ProjectRepository.createProject(name, userId);
 
-export const updateProject = [
+    return res.json(wrapResult<Project>(project));
+};
+
+export const updateProjectValidation = [
     body('name').notEmpty(),
     validateResult,
-    async (req: Request, res: Response) => {
-        try {
-            const { name }: { name: string } = req.body;
-            const project = await getUserProjectByReq(req);
-            if (!project) {
-                return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
-            }
-
-            const updatedProject = await ProjectRepository.updateProject(project.id, name);
-
-            return res.json(wrapResult<Project>(updatedProject));
-        } catch {
-            return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
-        }
-    }
 ];
+export const updateProject = async (req: Request, res: Response) => {
+    const { name }: { name: string } = req.body;
+    const project = await getUserProjectByReq(req);
+    if (!project) {
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
+    }
+
+    const updatedProject = await ProjectRepository.updateProject(project.id, name);
+
+    return res.json(wrapResult<Project>(updatedProject));
+};
 
 export const deleteProject = async (req: Request, res: Response) => {
-        try {
-            const project = await getUserProjectByReq(req);
-            if (!project) {
-                return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
-            }
-
-            const deletedProject = await ProjectRepository.deleteProject(project.id);
-
-            return res.json(wrapResult<Project>(deletedProject));
-        } catch {
-            return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
-        }
+    const project = await getUserProjectByReq(req);
+    if (!project) {
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
     }
-;
+
+    const deletedProject = await ProjectRepository.deleteProject(project.id);
+
+    return res.json(wrapResult<Project>(deletedProject));
+};
