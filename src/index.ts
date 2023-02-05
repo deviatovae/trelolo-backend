@@ -15,3 +15,7 @@ app.listen(port, () => {
 app.use(express.json());
 app.use(cors());
 app.use(router);
+
+process.on('uncaughtException', function (err) {
+    console.error('Exception: ', err);
+});
