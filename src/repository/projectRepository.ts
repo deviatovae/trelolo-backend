@@ -31,6 +31,22 @@ export class ProjectRepository {
         });
     };
 
+    static getProjectBySectionIdAndUserId = async (sectionId: string, userId: string) => {
+        return prisma.project.findFirst({
+            where: {
+                AND: [
+                    { sections: { some: { id: sectionId } } },
+                    {
+                        OR: [
+                            { ownerId: userId },
+                            { members: { some: { userId } } }
+                        ]
+                    }
+                ]
+            }
+        });
+    };
+
     static createProject = async (name: string, userId: string) => {
         return prisma.project.create({
             data: { name, ownerId: userId }

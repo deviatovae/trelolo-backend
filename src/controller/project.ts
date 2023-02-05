@@ -5,8 +5,7 @@ import StatusCode from 'status-code-enum';
 import { getUserIdByReq } from '../service/user';
 import { Project } from '@prisma/client';
 import { ProjectRepository } from '../repository/projectRepository';
-import { wrapError, wrapResult } from '../utils/resWrapper';
-import { ListResult } from '../types/types';
+import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
 
 const getUserProjectByReq = async (req: Request): Promise<Project | null> => {
     const id = req.params.id as string;
@@ -15,22 +14,17 @@ const getUserProjectByReq = async (req: Request): Promise<Project | null> => {
     return ProjectRepository.getProjectByIdAndUserId(id, userId);
 };
 
-export const getProjects = [
-    async (req: Request, res: Response) => {
+export const getProjects = async (req: Request, res: Response) => {
         const userId = getUserIdByReq(req);
 
         try {
             const projects = await ProjectRepository.getProjectsByUserId(userId);
-
-            return res.json(wrapResult<ListResult<Project>>({
-                items: projects,
-                count: projects.length
-            }));
+            return res.json(wrapListResult<Project>(projects));
         } catch {
             return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
         }
     }
-];
+;
 
 export const createProject = [
     body('name').notEmpty(),
@@ -69,8 +63,7 @@ export const updateProject = [
     }
 ];
 
-export const deleteProject = [
-    async (req: Request, res: Response) => {
+export const deleteProject = async (req: Request, res: Response) => {
         try {
             const project = await getUserProjectByReq(req);
             if (!project) {
@@ -84,4 +77,4 @@ export const deleteProject = [
             return res.status(StatusCode.ServerErrorInternal).json(wrapError('Database error'));
         }
     }
-];
+;
