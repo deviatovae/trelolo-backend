@@ -7,6 +7,7 @@ export const wrapHandler = <Param, Body, Query>(callback: RequestHandler<Param, 
         try {
             await callback(req, res, next);
         } catch (e) {
+            console.error(e);
             res.status(StatusCode.ServerErrorInternal).json(wrapError('Internal error'));
         }
     };
