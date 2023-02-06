@@ -4,13 +4,14 @@ export type Result<D, E> = {
     errors: E[]
 };
 
-export type GetUserResult = {
+export type UserInfo = {
     id: string
     email: string
     name: string
 };
 
 export type LoginResult = {
+    user: UserInfo
     token: string
 };
 

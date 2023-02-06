@@ -6,7 +6,7 @@ import { createUser, getUserByEmail } from '../repository/userRepository';
 import { validateResult } from '../middleware/middleware';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapResult } from '../utils/resWrapper';
-import { GetUserResult, LoginResult } from '../types/types';
+import { LoginResult, UserInfo } from '../types/types';
 
 export const registerValidation = [
     body('email').isEmail().bail().custom(async (email: string) => {
@@ -30,7 +30,7 @@ export const register = async (req: Request, res: Response) => {
         email: user.email
     };
 
-    return res.json(wrapResult<GetUserResult>(userResult));
+    return res.json(wrapResult<UserInfo>(userResult));
 };
 
 export const loginValidation = [
@@ -47,6 +47,11 @@ export const login = async (req: Request, res: Response) => {
     }
 
     return res.json(wrapResult<LoginResult>({
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        },
         token: createToken(user.id)
     }));
 };

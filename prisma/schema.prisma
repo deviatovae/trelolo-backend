@@ -54,7 +54,7 @@ model Task {
   sectionId   String      @db.ObjectId
   name        String
   position    Int
-  assignees    Task2User[]
+  assignees   Task2User[]
   description String?
   dueDate     DateTime?
   isCompleted Boolean     @default(false)

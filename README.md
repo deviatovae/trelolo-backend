@@ -155,6 +155,11 @@ Authorize user and return JWT token
   ```json
   {
     "result": true,
+    "user": {
+      "id": "63dd8048d70ca740655d684d",
+      "name": "Test",
+      "email": "test2@gmail.com"
+    },
     "data": {
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJpZCI6IjYzZGQxZDMzMjM4YWI0NGMwZGU1NGExMiIsImlvdCI6MTY3NTQzNTQ4NTIwNH0=.ZzLHFnYu2Z89Finv4mRjAzheo87oBqkrJd0hIcBfg+0="
     },
