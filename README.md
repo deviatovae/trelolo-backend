@@ -21,6 +21,10 @@ https://trelolo.onrender.com
   - [Create](#create-task)
   - [Update](#update-task)
   - [Delete](#delete-task)
+- **Members**
+  - [Get list](#get-members)
+  - [Add member](#add-member-to-the-project)
+  - [Remove member](#remove-member-from-the-project)
 
 ## What responses look like
 
@@ -758,6 +762,165 @@ Delete task
         "Task is not found"
       ]
     }
+    ```
+</details>
+
+---
+
+---
+**Members**
+----
+Endpoints to manage members
+
+**Get members**
+---
+`GET` **/projects/:projectId/members**
+
+Returns all members belonging to the specified project
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "items": [
+            {
+                "id": "63dd84a201fe8817ec6febcc",
+                "project": {
+                    "id": "63dd7e968d6ad64745e15a03",
+                    "name": "Common project",
+                    "ownerId": "63dd1d33238ab44c0de54a12"
+                },
+                "user": {
+                    "id": "63dd8048d70ca740655d684d",
+                    "name": "Test",
+                    "email": "test2@gmail.com"
+                }
+            }
+        ],
+        "count": 1
+    },
+    "errors": []
+  }
+  ```
+</details>
+
+---
+
+**Add member to the project**
+---
+`POST` **/projects/:projectId/members**
+
+Add member to the project
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Body**
+    ```json
+    {
+      "email": "test3@gmail.com"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e1532ab04f77e85deade4b",
+        "project": {
+            "id": "63dd7e968d6ad64745e15a03",
+            "name": "Common project",
+            "ownerId": "63dd1d33238ab44c0de54a12"
+        },
+        "user": {
+            "id": "63de8cfd12005599ec895871",
+            "name": "Test",
+            "email": "test4@gmail.com"
+        }
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** - `400 Bad Request`
+
+  ```json
+  {
+    "result": false,
+    "data": null,
+    "errors": [
+        {
+            "value": "test4",
+            "msg": "Email should be valid",
+            "param": "email",
+            "location": "body"
+        }
+    ]
+  }
+  ```
+</details>
+
+---
+
+**Remove member from the project**
+---
+`DELETE` **/members/:memberId**
+
+Remove member from the project
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e1532ab04f77e85deade4b",
+        "project": {
+            "id": "63dd7e968d6ad64745e15a03",
+            "name": "Common project",
+            "ownerId": "63dd1d33238ab44c0de54a12"
+        },
+        "user": {
+            "id": "63de8cfd12005599ec895871",
+            "name": "Test",
+            "email": "test4@gmail.com"
+        }
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+    "result": false,
+    "data": null,
+    "errors": [
+        "Member is not found"
+    ]
+  }
     ```
 </details>
 

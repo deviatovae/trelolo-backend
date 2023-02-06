@@ -26,6 +26,7 @@ import {
     updateTaskValidation
 } from './controller/task';
 import { wrapHandler } from './utils/handlerWrapper';
+import { addMember, createMemberValidation, getMembers, removeMember } from './controller/member';
 
 export const router = Router();
 
@@ -48,3 +49,7 @@ router.get('/sections/:sectionId/tasks', wrapHandler(getTasks));
 router.post('/sections/:sectionId/tasks', ...createTaskValidation, wrapHandler(createTask));
 router.patch('/tasks/:taskId', ...updateTaskValidation, wrapHandler(updateTask));
 router.delete('/tasks/:taskId', wrapHandler(deleteTask));
+
+router.get('/projects/:projectId/members', wrapHandler(getMembers));
+router.post('/projects/:projectId/members', ...createMemberValidation, wrapHandler(addMember));
+router.delete('/members/:memberId', wrapHandler(removeMember));

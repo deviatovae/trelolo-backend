@@ -1,3 +1,5 @@
+import { Project } from '@prisma/client';
+
 export type Result<D, E> = {
     result: boolean,
     data: D
@@ -30,4 +32,11 @@ export type UpdateTaskRequestBody = {
     description?: string
     dueDate?: string
     isCompleted?: boolean
+};
+
+
+export type MemberResult = {
+    id: string
+    user: UserInfo
+    project: Project
 };
