@@ -1,0 +1,75 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  email String [unique, not null]
+  name String [not null]
+  image String
+  password String [not null]
+  salt String [not null]
+  membership Member [not null]
+  projects Project [not null]
+}
+
+Table Project {
+  id String [pk]
+  name String [not null]
+  owner User [not null]
+  ownerId String [not null]
+  members Member [not null]
+  sections Section [not null]
+}
+
+Table Member {
+  id String [pk]
+  user User [not null]
+  userId String [not null]
+  project Project [not null]
+  projectId String [not null]
+  tasks Task2Member [not null]
+}
+
+Table Section {
+  id String [pk]
+  project Project [not null]
+  projectId String [not null]
+  name String [not null]
+  position Int [not null]
+  tasks Task [not null]
+}
+
+Table Task {
+  id String [pk]
+  section Section [not null]
+  sectionId String [not null]
+  name String [not null]
+  position Int [not null]
+  assignees Task2Member [not null]
+  description String
+  dueDate DateTime
+  isCompleted Boolean [not null, default: false]
+}
+
+Table Task2Member {
+  id String [pk]
+  member Member [not null]
+  memberId String [not null]
+  task Task [not null]
+  taskId String [not null]
+}
+
+Ref: Project.ownerId > User.id
+
+Ref: Member.userId > User.id
+
+Ref: Member.projectId > Project.id
+
+Ref: Section.projectId > Project.id
+
+Ref: Task.sectionId > Section.id
+
+Ref: Task2Member.memberId > Member.id
+
+Ref: Task2Member.taskId > Task.id
