@@ -1,14 +1,14 @@
 import { Task2Member } from '@prisma/client';
 import { TaskAssigneeResult } from '../types/types';
-import { MemberSerializationData, MemberSerializer } from './memberSerializer';
+import { BaseMemberSerializationData, MemberSerializer } from './memberSerializer';
 
-export type TaskSerializationData = Task2Member & { member: MemberSerializationData };
+export type TaskAssigneeSerializationData = Task2Member & { member: BaseMemberSerializationData };
 
 export class TaskAssigneeSerializer {
-    static serialize(assignee: TaskSerializationData): TaskAssigneeResult {
+    static serialize(assignee: TaskAssigneeSerializationData): TaskAssigneeResult {
         return {
             id: assignee.id,
-            member: MemberSerializer.serialize(assignee.member),
+            member: MemberSerializer.serializeBaseInfo(assignee.member),
         };
     }
 }

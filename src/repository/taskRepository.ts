@@ -9,6 +9,9 @@ export class TaskRepository {
                 section: {
                     id: sectionId
                 }
+            },
+            include: {
+                assignees: true
             }
         });
     }
@@ -84,9 +87,30 @@ export class TaskRepository {
                 member: {
                     include: {
                         user: true,
-                        project: true,
                     }
                 }
+            }
+        });
+    }
+
+    static async removeAssignee(assigneeId: string) {
+        return prisma.task2Member.delete({
+            where: { id: assigneeId },
+            include: {
+                member: {
+                    include: {
+                        user: true,
+                    }
+                }
+            }
+        });
+    }
+
+    static async getAssigneeByIdAndTaskId(assigneeId: string, taskId: string) {
+        return prisma.task2Member.findFirst({
+            where: {
+                id: assigneeId,
+                taskId
             }
         });
     }

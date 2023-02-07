@@ -34,14 +34,17 @@ export type UpdateTaskRequestBody = {
     isCompleted?: boolean
 };
 
-
-export type MemberResult = {
+export type BaseMemberInfo = {
     id: string
     user: UserInfo
+};
+
+export type MemberResult = BaseMemberInfo & {
+    id: string
     project: Project
 };
 
 export type TaskAssigneeResult = {
     id: string
-    member: MemberResult
+    member: BaseMemberInfo
 };

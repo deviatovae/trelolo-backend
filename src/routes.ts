@@ -22,7 +22,7 @@ import {
     createTask,
     createTaskValidation,
     deleteTask,
-    getTasks,
+    getTasks, removeAssignee,
     updateTask,
     updateTaskValidation
 } from './controller/task';
@@ -55,4 +55,5 @@ router.get('/projects/:projectId/members', wrapHandler(getMembers));
 router.post('/projects/:projectId/members', ...createMemberValidation, wrapHandler(addMember));
 router.delete('/members/:memberId', wrapHandler(removeMember));
 
-router.post('/tasks/:taskId/assign', wrapHandler(assignMember));
+router.post('/tasks/:taskId/assignee', wrapHandler(assignMember));
+router.delete('/tasks/:taskId/assignee/:assigneeId', wrapHandler(removeAssignee));

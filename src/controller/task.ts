@@ -105,3 +105,16 @@ export const assignMember = async (req: Request, res: Response) => {
 
     return res.json(wrapResult<TaskAssigneeResult>(result));
 };
+
+export const removeAssignee = async (req: Request, res: Response) => {
+    const { assigneeId, taskId } = req.params;
+
+    const assignee = await TaskRepository.getAssigneeByIdAndTaskId(assigneeId, taskId);
+    if (!assignee) {
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Assignee is not found'));
+    }
+
+    const removedAssignee = await TaskRepository.removeAssignee(assigneeId);
+    const result = TaskAssigneeSerializer.serialize(removedAssignee);
+    return res.json(wrapResult<TaskAssigneeResult>(result));
+};

@@ -1,14 +1,22 @@
 import { Member, Project, User } from '@prisma/client';
-import { MemberResult } from '../types/types';
+import { BaseMemberInfo, MemberResult } from '../types/types';
 import { UserSerializer } from './userSerializer';
 
-export type MemberSerializationData = Member & { project: Project, user: User };
+export type BaseMemberSerializationData = Member & { user: User };
+export type MemberSerializationData = BaseMemberSerializationData & { project: Project };
+
 export class MemberSerializer {
-    static serialize(member: MemberSerializationData): MemberResult {
+    static serializeBaseInfo(member: Member & { user: User }): BaseMemberInfo {
         return {
             id: member.id,
-            project: member.project,
             user: UserSerializer.serialize(member.user)
+        };
+    }
+
+    static serialize(member: MemberSerializationData): MemberResult {
+        return {
+            ...MemberSerializer.serializeBaseInfo(member),
+            project: member.project,
         };
     }
 }
