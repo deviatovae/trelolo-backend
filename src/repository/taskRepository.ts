@@ -73,4 +73,21 @@ export class TaskRepository {
             where: { id }
         });
     }
+
+    static async assignMember(taskId: string, memberId: string) {
+        return prisma.task2Member.create({
+            data: {
+                taskId,
+                memberId
+            },
+            include: {
+                member: {
+                    include: {
+                        user: true,
+                        project: true,
+                    }
+                }
+            }
+        });
+    }
 }

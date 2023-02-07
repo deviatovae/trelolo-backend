@@ -40,3 +40,8 @@ export type MemberResult = {
     user: UserInfo
     project: Project
 };
+
+export type TaskAssigneeResult = {
+    id: string
+    member: MemberResult
+};

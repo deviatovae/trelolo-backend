@@ -7,7 +7,9 @@ import { TaskRepository } from '../repository/taskRepository';
 import { SectionRepository } from '../repository/sectionRepository';
 import { body } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
-import { UpdateTaskRequestBody, UpdateTaskRequestParams } from '../types/types';
+import { TaskAssigneeResult, UpdateTaskRequestBody, UpdateTaskRequestParams } from '../types/types';
+import { MemberRepository } from '../repository/memberRepository';
+import { TaskAssigneeSerializer } from '../serializer/taskAssigneeSerializer';
 
 export const getTasks = async (req: Request, res: Response) => {
     const { sectionId } = req.params;
@@ -82,4 +84,24 @@ export const deleteTask = async (req: Request<UpdateTaskRequestParams, object, U
     const deletedTask = await TaskRepository.deleteTask(taskId);
 
     return res.json(wrapResult<Task>(deletedTask));
+};
+
+export const assignMember = async (req: Request, res: Response) => {
+    const { taskId } = req.params;
+    const task = await TaskRepository.getTaskByIdAndUserId(taskId, getUserIdByReq(req));
+    if (!task) {
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
+    }
+
+    const section = await SectionRepository.getSectionByTaskId(taskId);
+    const member = await MemberRepository.getMemberById(req.body.memberId);
+
+    if (!member || !section || member.projectId !== section.projectId) {
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Member is not found'));
+    }
+
+    const assignee = await TaskRepository.assignMember(taskId, member.id);
+    const result = TaskAssigneeSerializer.serialize(assignee);
+
+    return res.json(wrapResult<TaskAssigneeResult>(result));
 };

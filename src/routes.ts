@@ -18,6 +18,7 @@ import {
     updateSectionValidation
 } from './controller/section';
 import {
+    assignMember,
     createTask,
     createTaskValidation,
     deleteTask,
@@ -53,3 +54,5 @@ router.delete('/tasks/:taskId', wrapHandler(deleteTask));
 router.get('/projects/:projectId/members', wrapHandler(getMembers));
 router.post('/projects/:projectId/members', ...createMemberValidation, wrapHandler(addMember));
 router.delete('/members/:memberId', wrapHandler(removeMember));
+
+router.post('/tasks/:taskId/assign', wrapHandler(assignMember));

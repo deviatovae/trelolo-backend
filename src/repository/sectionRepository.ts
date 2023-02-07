@@ -71,4 +71,16 @@ export class SectionRepository {
             }
         });
     }
+
+    static async getSectionByTaskId(taskId: string) {
+        return prisma.section.findFirst({
+            where: {
+                tasks: {
+                    some: {
+                        id: taskId
+                    }
+                }
+            }
+        });
+    }
 }
