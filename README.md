@@ -21,6 +21,8 @@ https://trelolo.onrender.com
   - [Create](#create-task)
   - [Update](#update-task)
   - [Delete](#delete-task)
+  - [Add task assignee](#add-task-assignee)
+  - [Remove task assignee](#remove-task-assignee)
 - **Members**
   - [Get list](#get-members)
   - [Add member](#add-member-to-the-project)
@@ -766,6 +768,97 @@ Delete task
 </details>
 
 ---
+
+**Add task assignee**
+---
+`POST` **/tasks/:taskId/assignee**
+
+Assign member to task
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e28f524f52309bf533d217",
+        "member": {
+            "id": "63dd84a201fe8817ec6febcc",
+            "user": {
+                "id": "63dd8048d70ca740655d684d",
+                "name": "Test",
+                "email": "test2@gmail.com"
+            }
+        }
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Member is not found"
+      ]
+    }
+    ```
+</details>
+
+**Remove task assignee**
+---
+`DELETE` **/tasks/:taskId/assignee/:assigneeId**
+
+Remove assigned member from task
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e28e5d1995e8339b59e74b",
+        "member": {
+            "id": "63dd84a201fe8817ec6febcc",
+            "user": {
+                "id": "63dd8048d70ca740655d684d",
+                "name": "Test",
+                "email": "test2@gmail.com"
+            }
+        }
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Assignee is not found"
+      ]
+    }
+    ```
+</details>
+
 
 ---
 **Members**
