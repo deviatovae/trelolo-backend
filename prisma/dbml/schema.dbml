@@ -11,6 +11,7 @@ Table User {
   salt String [not null]
   membership Member [not null]
   projects Project [not null]
+  comments Comment [not null]
 }
 
 Table Project {
@@ -50,6 +51,7 @@ Table Task {
   description String
   dueDate DateTime
   isCompleted Boolean [not null, default: false]
+  comments Comment [not null]
 }
 
 Table Task2Member {
@@ -58,6 +60,27 @@ Table Task2Member {
   memberId String [not null]
   task Task [not null]
   taskId String [not null]
+}
+
+Table Comment {
+  id String [pk]
+  text String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  task Task [not null]
+  taskId String [not null]
+  user User [not null]
+  userId String [not null]
+}
+
+Table CommentLike {
+  id String [pk]
+  commentId String [not null]
+  userId String [not null]
+
+  indexes {
+    (commentId, userId) [unique]
+  }
 }
 
 Ref: Project.ownerId > User.id
@@ -73,3 +96,7 @@ Ref: Task.sectionId > Section.id
 Ref: Task2Member.memberId > Member.id
 
 Ref: Task2Member.taskId > Task.id
+
+Ref: Comment.taskId > Task.id
+
+Ref: Comment.userId > User.id

@@ -28,6 +28,14 @@ import {
 } from './controller/task';
 import { wrapHandler } from './utils/handlerWrapper';
 import { addMember, createMemberValidation, getMembers, removeMember } from './controller/member';
+import {
+    addComment,
+    addCommentLike, commentValidation,
+    deleteComment,
+    deleteCommentLike,
+    getComments,
+    updateComment
+} from './controller/comment';
 
 export const router = Router();
 
@@ -57,3 +65,10 @@ router.delete('/members/:memberId', wrapHandler(removeMember));
 
 router.post('/tasks/:taskId/assignee', wrapHandler(assignMember));
 router.delete('/tasks/:taskId/assignee/:assigneeId', wrapHandler(removeAssignee));
+
+router.get('/tasks/:taskId/comments', wrapHandler(getComments));
+router.post('/tasks/:taskId/comments', commentValidation, wrapHandler(addComment));
+router.patch('/comments/:commentId', commentValidation, wrapHandler(updateComment));
+router.delete('/comments/:commentId', wrapHandler(deleteComment));
+router.post('/comments/:commentId/likes', wrapHandler(addCommentLike));
+router.delete('/comments/:commentId/likes', wrapHandler(deleteCommentLike));

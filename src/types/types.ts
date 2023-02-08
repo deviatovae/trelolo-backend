@@ -48,3 +48,12 @@ export type TaskAssigneeResult = {
     id: string
     member: BaseMemberInfo
 };
+
+export type CommentResult = {
+    id: string
+    text: string
+    likes: number
+    user: UserInfo
+    createdAt: string
+    updatedAt?: string
+};

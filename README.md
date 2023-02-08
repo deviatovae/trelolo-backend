@@ -21,8 +21,17 @@ https://trelolo.onrender.com
   - [Create](#create-task)
   - [Update](#update-task)
   - [Delete](#delete-task)
-  - [Add task assignee](#add-task-assignee)
-  - [Remove task assignee](#remove-task-assignee)
+  
+  - **Assignee** 
+    - [Create](#add-task-assignee)
+    - [Delete](#remove-task-assignee)
+  - **Comment**
+    - [Create](#create-task-comment)
+    - [Update](#update-task-comment)
+    - [Delete](#remove-task-comment)
+    - **Like**
+      - [Create](#add-comment-like)
+      - [Delete](#remove-comment-like)
 - **Members**
   - [Get list](#get-members)
   - [Add member](#add-member-to-the-project)
@@ -859,8 +868,274 @@ Remove assigned member from task
     ```
 </details>
 
+---
+
+**Create task comment**
+---
+`POST` **/tasks/:taskId/comments**
+
+Create task comment
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+
+* **Body**
+    ```json
+    {
+      "text": "This is an amazing comment!"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e3efcb96a5f9aa450143bb",
+        "text": "This is an amazing comment!",
+        "user": {
+            "id": "63dd1d33238ab44c0de54a12",
+            "name": "Test User",
+            "email": "test@gmail.com"
+        },
+        "likes": 0,
+        "createdAt": "2023-02-08T18:54:03.027Z"
+    },
+    "errors": []
+  }
+  ```
+* **Failure response**
+
+  `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Task is not found"
+      ]
+    }
+    ```
+  `400 Bad Request`
+  ```json
+  {
+    "result": false,
+    "data": null,
+    "errors": [
+        {
+            "msg": "Comment text should not be empty",
+            "param": "text",
+            "location": "body"
+        }
+    ]
+  }
+  ```
+</details>
 
 ---
+
+**Update task comment**
+---
+`PATCH` **/comments/:commentId**
+
+Update task
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+* **Body**
+
+    ```json
+    {
+      "text": "Wish you good luck!"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e3efe396a5f9aa450143bc",
+        "text": "Wish you good luck!",
+        "user": {
+            "id": "63dd1d33238ab44c0de54a12",
+            "name": "Test User",
+            "email": "test@gmail.com"
+        },
+        "likes": 0,
+        "createdAt": "2023-02-08T18:54:27.646Z",
+        "updatedAt": "2023-02-08T18:58:01.948Z"
+    },
+    "errors": []
+  }
+  ```
+
+* **Failure response** `400 Bad Request`
+  ```json
+  {
+    "result": false,
+    "data": null,
+    "errors": [
+        {
+            "value": "",
+            "msg": "Comment text should not be empty",
+            "param": "text",
+            "location": "body"
+        }
+    ]
+  }
+  ```
+
+</details>
+
+---
+
+**Remove task comment**
+---
+`DELETE` **/comments/:commentId**
+
+Delete task comment
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e3efe396a5f9aa450143bc",
+        "text": "Wish you good luck!",
+        "user": {
+            "id": "63dd1d33238ab44c0de54a12",
+            "name": "Test User",
+            "email": "test@gmail.com"
+        },
+        "likes": 0,
+        "createdAt": "2023-02-08T18:54:27.646Z",
+        "updatedAt": "2023-02-08T18:58:01.948Z"
+    },
+    "errors": []
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Comment is not found"
+      ]
+    }
+    ```
+</details>
+
+---
+
+**Add comment like**
+---
+`POST` **/comments/:commentId/likes**
+
+Add comment like
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e2c456be9be1eefe482a92",
+        "likes": 2
+    },
+    "errors": []
+  }
+  ```
+* **Failure response**
+
+  `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Comment is not found"
+      ]
+    }
+    ```
+
+</details>
+
+---
+
+**Remove comment like**
+---
+`DELETE` **/comments/:commentId/likes**
+
+Remove comment like
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json`
+
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63e2c456be9be1eefe482a92",
+        "likes": 1
+    },
+    "errors": []
+  }
+  ```
+* **Failure response**
+
+  `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Comment is not found"
+      ]
+    }
+    ```
+
+</details>
+
+---
+
 **Members**
 ----
 Endpoints to manage members
