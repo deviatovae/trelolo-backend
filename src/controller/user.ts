@@ -9,7 +9,7 @@ import { wrapError, wrapResult } from '../utils/resWrapper';
 import { LoginResult, UserInfo } from '../types/types';
 
 export const registerValidation = [
-    body('email').isEmail().bail().custom(async (email: string) => {
+    body('email').isEmail().withMessage('Should be a valid email').bail().custom(async (email: string) => {
         return (await getUserByEmail(email)) ? Promise.reject('E-mail already in use') : null;
     }),
     body('name')
@@ -34,8 +34,8 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const loginValidation = [
-    body('email').isEmail(),
-    body('password').notEmpty(),
+    body('email').isEmail().withMessage('Email should be a valid email'),
+    body('password').notEmpty().withMessage('Password should not be empty'),
 ];
 export const login = async (req: Request, res: Response) => {
     const user = await getUserByEmail(req.body.email);
