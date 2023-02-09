@@ -6,7 +6,6 @@ Table User {
   id String [pk]
   email String [unique, not null]
   name String [not null]
-  image String
   password String [not null]
   salt String [not null]
   membership Member [not null]
