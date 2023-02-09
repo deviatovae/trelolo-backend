@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { getUserId, isTokenValid } from '../service/jwt';
-import { getUserById } from '../repository/userRepository';
+import { UserRepository } from '../repository/userRepository';
 import { validationResult } from 'express-validator';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapValidationErrors } from '../utils/resWrapper';
@@ -13,7 +13,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
         }
 
         try {
-            req.user = await getUserById(getUserId(token));
+            req.user = await UserRepository.getUserById(getUserId(token));
         } catch (e) {
             console.error(e);
         }

@@ -5,7 +5,7 @@ import { ProjectRepository } from '../repository/projectRepository';
 import { getUserIdByReq } from '../service/user';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
-import { getUserByEmail } from '../repository/userRepository';
+import { UserRepository } from '../repository/userRepository';
 import { MemberRepository } from '../repository/memberRepository';
 import { MemberResult } from '../types/types';
 import { MemberSerializer } from '../serializer/memberSerializer';
@@ -37,7 +37,7 @@ export const addMember = async (req: Request, res: Response) => {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
     }
 
-    const user = await getUserByEmail(req.body.email);
+    const user = await UserRepository.getUserByEmail(req.body.email);
     if (!user) {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('User with this email is not found'));
     }

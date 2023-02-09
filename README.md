@@ -3,9 +3,12 @@ https://trelolo.onrender.com
 
 ## Usage
 
+- **[Authentication](#authentication)**
 - **User**
     - [Register (sign up)](#register)
     - [Log in](#log-in)
+    - [Get](#get-user)
+    - [Patch](#update-user)
 - **Projects**
   - [Get list](#get-projects)
   - [Create](#create-project)
@@ -85,6 +88,20 @@ https://trelolo.onrender.com
 </details>
 
 ---
+
+## Authentication
+
+First, you should get a JWT token by calling `POST` **/user/login** method with email/password payload ([Log in](#log-in)).
+
+Response contains the token you should save and use to make requests.
+
+<details>
+
+* **Headers**
+
+  - **X-TOKEN:** `<User JWT token>`
+
+</details>
 
 **Register**
 ----
@@ -196,6 +213,109 @@ Authorize user and return JWT token
 
 ---
 
+**Get user**
+---
+`GET` **/user**
+
+Returns user details
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63dd8048d70ca740655d684d",
+        "name": "Test",
+        "email": "test2@gmail.com"
+    },
+    "errors": []
+  }
+  ```
+</details>
+
+---
+
+**Update user**
+---
+`PATCH` **/user**
+
+Update user details
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
+
+* **Body**
+
+    * All fields are optional
+    ```json
+    {
+      "name": "Junior Developer",
+      "password": "qwerty"
+    }
+    ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63dd1d33238ab44c0de54a12",
+        "name": "Junior Developer",
+        "email": "test@gmail.com"
+    },
+    "errors": []
+  }
+  ```
+* **Failure response**
+
+  - `400 Bad Request`
+
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        {
+          "value": "",
+          "msg": "Should not be empty",
+          "param": "name",
+          "location": "body"
+        },
+        {
+          "value": "",
+          "msg": "Password should not be empty",
+          "param": "password",
+          "location": "body"
+        },
+        {
+          "value": "",
+          "msg": "Should contain at least 6 symbols",
+          "param": "password",
+          "location": "body"
+        }
+      ]
+    }
+    ```
+
+</details>
+
+---
+
 **Projects**
 ----
 Endpoints to manage projects
@@ -210,7 +330,8 @@ Returns all projects where the user is either an owner or a member
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 ---
 
 * **Success response** - `200 OK`
@@ -250,7 +371,8 @@ Create new project
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 
 * **Body**
@@ -304,7 +426,8 @@ Update project
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 * **Body**
     ```json
@@ -369,7 +492,8 @@ Delete project
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -413,7 +537,8 @@ Returns all sections belonging to the specified project
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 ---
 
 * **Success response** - `200 OK`
@@ -461,7 +586,8 @@ Create new section
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 
 * **Body**
@@ -515,7 +641,8 @@ Update section
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 * **Body**
 
@@ -556,7 +683,8 @@ Delete section
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -603,7 +731,8 @@ Returns all tasks belonging to the specified section
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 ---
 
 * **Success response** - `200 OK`
@@ -642,7 +771,8 @@ Create new task
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 
 * **Body**
@@ -699,7 +829,8 @@ Update task
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 * **Body**
 
@@ -746,7 +877,8 @@ Delete task
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -788,7 +920,8 @@ Assign member to task
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -833,7 +966,8 @@ Remove assigned member from task
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -880,7 +1014,8 @@ Create task comment
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 
 * **Body**
@@ -950,7 +1085,8 @@ Update task
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 * **Body**
 
@@ -1012,7 +1148,8 @@ Delete task comment
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -1060,7 +1197,8 @@ Add comment like
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -1103,7 +1241,8 @@ Remove comment like
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 
@@ -1150,7 +1289,8 @@ Returns all members belonging to the specified project
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 ---
 
 * **Success response** - `200 OK`
@@ -1193,7 +1333,8 @@ Add member to the project
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 
 * **Body**
@@ -1255,7 +1396,8 @@ Remove member from the project
 
 * **Headers**
 
-  - **Content-Type:** `application/json`
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
 
 ---
 

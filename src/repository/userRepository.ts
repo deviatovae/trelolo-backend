@@ -1,24 +1,41 @@
-import getPrisma from '../service/prisma';
+import getPrismaClient from '../service/prisma';
 
-export async function getUserById(id: string) {
-    return getPrisma().user.findFirst({
-        where: { id }
-    });
-}
+const prisma = getPrismaClient();
 
-export async function getUserByEmail(email: string) {
-    return getPrisma().user.findFirst({
-        where: { email }
-    });
-}
+export class UserRepository {
+    static async getUserById(id: string) {
+        return prisma.user.findFirst({
+            where: { id }
+        });
+    }
 
-export async function createUser(email: string, name: string, password: string, salt: string) {
-    return getPrisma().user.create({
-        data: {
-            email,
-            name,
-            password,
-            salt
-        },
-    });
+    static async getUserByEmail(email: string) {
+        return prisma.user.findFirst({
+            where: { email }
+        });
+    }
+
+    static async createUser(email: string, name: string, password: string, salt: string) {
+        return prisma.user.create({
+            data: {
+                email,
+                name,
+                password,
+                salt
+            },
+        });
+    }
+
+    static async updateUser(id: string, name?: string, password?: string, salt?: string) {
+        return prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                name,
+                password,
+                salt
+            },
+        });
+    }
 }

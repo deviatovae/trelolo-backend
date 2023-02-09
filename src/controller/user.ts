@@ -2,43 +2,81 @@ import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import bcrypt from 'bcrypt';
 import { createToken } from '../service/jwt';
-import { createUser, getUserByEmail } from '../repository/userRepository';
+import { UserRepository } from '../repository/userRepository';
 import { validateResult } from '../middleware/middleware';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapResult } from '../utils/resWrapper';
 import { LoginResult, UserInfo } from '../types/types';
+import { getUserIdByReq } from '../service/user';
+import { UserSerializer } from '../serializer/userSerializer';
 
-export const registerValidation = [
-    body('email').isEmail().withMessage('Should be a valid email').bail().custom(async (email: string) => {
-        return (await getUserByEmail(email)) ? Promise.reject('E-mail already in use') : null;
+const validations = {
+    email: body('email').isEmail().withMessage('Should be a valid email').bail(),
+    emailExist: body('email').custom(async (email: string) => {
+        return (await UserRepository.getUserByEmail(email)) ? Promise.reject('E-mail already in use') : null;
     }),
-    body('name')
+    name: body('name')
         .notEmpty().withMessage('Should not be empty').bail()
         .isLength({ min: 2 }).withMessage('Should contain at least 2 symbols'),
-    body('password').isLength({ min: 6 }).withMessage('Should contain at least 6 symbols'),
+    password: body('password').notEmpty().withMessage('Password should not be empty'),
+    passwordRequirements: body('password').isLength({ min: 6 }).withMessage('Should contain at least 6 symbols'),
+};
+
+export const getUser = async (req: Request, res: Response) => {
+    const userId = getUserIdByReq(req);
+    const user = await UserRepository.getUserById(userId);
+    if (!user) {
+        return res.status(StatusCode.ServerErrorInternal).json(wrapError('User is not found'));
+    }
+    const result = UserSerializer.serialize(user);
+
+    return res.json(wrapResult<UserInfo>(result));
+};
+
+export const createUserValidation = [
+    validations.email,
+    validations.emailExist,
+    validations.name,
+    validations.password,
+    validations.passwordRequirements,
     validateResult,
 ];
-export const register = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response) => {
     const { email, name, password }: { email: string; name: string, password: string } = req.body;
     const salt = await bcrypt.genSalt(8);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const user = await createUser(email, name, passwordHash, salt);
-    const userResult = {
-        id: user.id,
-        name: user.name,
-        email: user.email
-    };
+    const user = await UserRepository.createUser(email, name, passwordHash, salt);
+    const result = UserSerializer.serialize(user);
 
-    return res.json(wrapResult<UserInfo>(userResult));
+    return res.json(wrapResult<UserInfo>(result));
+};
+
+export const updateUserValidation = [
+    validations.name.optional(),
+    validations.password.optional(),
+    validations.passwordRequirements.optional(),
+    validateResult,
+];
+
+export const updateUser = async (req: Request, res: Response) => {
+    const { name, password }: { name?: string, password?: string } = req.body;
+    const salt = password ? await bcrypt.genSalt(8) : undefined;
+    const passwordHash = password && salt ? await bcrypt.hash(password, salt) : undefined;
+    const userId = getUserIdByReq(req);
+
+    const user = await UserRepository.updateUser(userId, name, passwordHash, salt);
+    const result = UserSerializer.serialize(user);
+
+    return res.json(wrapResult<UserInfo>(result));
 };
 
 export const loginValidation = [
-    body('email').isEmail().withMessage('Email should be a valid email'),
-    body('password').notEmpty().withMessage('Password should not be empty'),
+    validations.email,
+    validations.password,
 ];
 export const login = async (req: Request, res: Response) => {
-    const user = await getUserByEmail(req.body.email);
+    const user = await UserRepository.getUserByEmail(req.body.email);
     const passwordHash = user && await bcrypt.hash(req.body.password, user.salt);
     const isPasswordMatch = user?.password === passwordHash;
 

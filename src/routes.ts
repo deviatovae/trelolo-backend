@@ -1,5 +1,13 @@
 import { Router } from 'express';
-import { login, loginValidation, register, registerValidation } from './controller/user';
+import {
+    login,
+    loginValidation,
+    createUser,
+    createUserValidation,
+    getUser,
+    updateUser,
+    updateUserValidation
+} from './controller/user';
 import middleware from './middleware/middleware';
 import {
     createProject,
@@ -39,10 +47,13 @@ import {
 
 export const router = Router();
 
-router.post('/user/register', ...registerValidation, wrapHandler(register));
+router.post('/user/register', ...createUserValidation, wrapHandler(createUser));
 router.post('/user/login', ...loginValidation, wrapHandler(login));
 
 router.use(middleware.auth);
+
+router.get('/user', wrapHandler(getUser));
+router.patch('/user', ...updateUserValidation, wrapHandler(updateUser));
 
 router.get('/projects', wrapHandler(getProjects));
 router.post('/projects', ...createProjectValidation, wrapHandler(createProject));
