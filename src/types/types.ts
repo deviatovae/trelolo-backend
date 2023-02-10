@@ -3,7 +3,7 @@ import { Project } from '@prisma/client';
 export type Result<D, E> = {
     result: boolean,
     data: D
-    errors: E[]
+    errors: E[] | null
 };
 
 export type UserInfo = {

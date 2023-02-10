@@ -5,7 +5,7 @@ export const wrapResult = <T>(data: T): Result<T, string> => {
     return {
         result: true,
         data,
-        errors: [],
+        errors: null,
     };
 };
 
@@ -16,7 +16,7 @@ export const wrapListResult = <T>(items: T[], count?: number): Result<ListResult
             items,
             count: count || items.length
         },
-        errors: [],
+        errors: null,
     };
 };
 

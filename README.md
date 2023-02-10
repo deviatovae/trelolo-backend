@@ -49,7 +49,7 @@ https://trelolo.onrender.com
   {
       "result": true, // always "true" if successful
       "data": {}      // or []
-      "errors": []    // always "empty" if result is successful
+      "errors": null  // always "null" if result is successful
   }
   ```
 
@@ -138,7 +138,7 @@ Create a new user
         "name": "Test",
         "email": "test5@gmail.com"
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** - `400 Bad Request`
@@ -195,7 +195,7 @@ Authorize user and return JWT token
     "data": {
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJpZCI6IjYzZGQxZDMzMjM4YWI0NGMwZGU1NGExMiIsImlvdCI6MTY3NTQzNTQ4NTIwNH0=.ZzLHFnYu2Z89Finv4mRjAzheo87oBqkrJd0hIcBfg+0="
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** - `403 Forbidden`
@@ -237,7 +237,7 @@ Returns user details
         "name": "Test",
         "email": "test2@gmail.com"
     },
-    "errors": []
+    "errors": null
   }
   ```
 </details>
@@ -278,7 +278,7 @@ Update user details
         "name": "Junior Developer",
         "email": "test@gmail.com"
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response**
@@ -354,7 +354,7 @@ Returns all projects where the user is either an owner or a member
         ],
         "count": 2
     },
-    "errors": []
+    "errors": null
   }
   ```
 </details>
@@ -393,7 +393,7 @@ Create new project
         "name": "My own project",
         "ownerId": "63dd1d33238ab44c0de54a12"
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** - `400 Bad Request`
@@ -447,7 +447,7 @@ Update project
         "name": "My new project name",
         "ownerId": "63dd1d33238ab44c0de54a12"
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** 
@@ -507,7 +507,7 @@ Delete project
         "name": "My new project name",
         "ownerId": "63dd1d33238ab44c0de54a12"
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** `404 Not Found`
@@ -569,7 +569,7 @@ Returns all sections belonging to the specified project
         ],
         "count": 3
     },
-    "errors": []
+    "errors": null
   }
   ```
 </details>
@@ -609,7 +609,7 @@ Create new section
         "name": "Do tomorrow",
         "position": 4
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** - `400 Bad Request`
@@ -666,7 +666,7 @@ Update section
         "name": "My new section name",
         "position": 1
     },
-    "errors": []
+    "errors": null
   }
   ```
 </details>
@@ -699,7 +699,7 @@ Delete section
         "name": "My new section",
         "position": 0
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** `404 Not Found`
@@ -754,7 +754,7 @@ Returns all tasks belonging to the specified section
         ],
         "count": 1
     },
-    "errors": []
+    "errors": null
   }
   ```
 </details>
@@ -797,7 +797,7 @@ Create new task
         "dueDate": null,
         "isCompleted": false
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** - `400 Bad Request`
@@ -860,7 +860,7 @@ Update task
         "dueDate": "2100-02-06T06:34:56.000Z",
         "isCompleted": false
     },
-    "errors": []
+    "errors": null
   }
   ```
 </details>
@@ -893,7 +893,7 @@ Delete task
         "name": "My new task",
         "position": 0
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** `404 Not Found`
@@ -941,7 +941,7 @@ Assign member to task
             }
         }
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** `404 Not Found`
@@ -987,7 +987,7 @@ Remove assigned member from task
             }
         }
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** `404 Not Found`
@@ -1042,7 +1042,7 @@ Create task comment
         "likes": 0,
         "createdAt": "2023-02-08T18:54:03.027Z"
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response**
@@ -1114,7 +1114,7 @@ Update task
         "createdAt": "2023-02-08T18:54:27.646Z",
         "updatedAt": "2023-02-08T18:58:01.948Z"
     },
-    "errors": []
+    "errors": null
   }
   ```
 
@@ -1170,7 +1170,7 @@ Delete task comment
         "createdAt": "2023-02-08T18:54:27.646Z",
         "updatedAt": "2023-02-08T18:58:01.948Z"
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** `404 Not Found`
@@ -1211,7 +1211,7 @@ Add comment like
         "id": "63e2c456be9be1eefe482a92",
         "likes": 2
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response**
@@ -1255,7 +1255,7 @@ Remove comment like
         "id": "63e2c456be9be1eefe482a92",
         "likes": 1
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response**
@@ -1316,7 +1316,7 @@ Returns all members belonging to the specified project
         ],
         "count": 1
     },
-    "errors": []
+    "errors": null
   }
   ```
 </details>
@@ -1363,7 +1363,7 @@ Add member to the project
             "email": "test4@gmail.com"
         }
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** - `400 Bad Request`
@@ -1419,7 +1419,7 @@ Remove member from the project
             "email": "test4@gmail.com"
         }
     },
-    "errors": []
+    "errors": null
   }
   ```
 * **Failure response** `404 Not Found`
