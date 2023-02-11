@@ -21,7 +21,7 @@ export const getSections = async (req: Request, res: Response) => {
 };
 
 export const createSectionValidation = [
-    body('name').notEmpty().withMessage('Name should not be empty'),
+    body('name').trim().notEmpty().withMessage('Name should not be empty'),
     validateResult,
 ];
 export const createSection = async (req: Request, res: Response) => {
@@ -40,7 +40,7 @@ export const createSection = async (req: Request, res: Response) => {
 };
 
 export const updateSectionValidation = [
-    body('name').optional().notEmpty().withMessage('Name should not be empty'),
+    body('name').optional().trim().notEmpty().withMessage('Name should not be empty'),
     body('position').optional().isNumeric().withMessage('Position should be numeric'),
     validateResult,
 ];

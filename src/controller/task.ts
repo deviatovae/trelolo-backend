@@ -24,7 +24,7 @@ export const getTasks = async (req: Request, res: Response) => {
 };
 
 export const createTaskValidation = [
-    body('name').notEmpty().withMessage('Name should not be empty'),
+    body('name').trim().notEmpty().withMessage('Name should not be empty'),
     validateResult,
 ];
 
@@ -44,9 +44,9 @@ export const createTask = async (req: Request, res: Response) => {
 };
 
 export const updateTaskValidation = [
-    body('name').optional().notEmpty().withMessage('Name should not be empty'),
+    body('name').optional().trim().notEmpty().withMessage('Name should not be empty'),
     body('position').optional().isNumeric().withMessage('Position should be numeric'),
-    body('description').optional().isString().withMessage('Description should be of type String'),
+    body('description').optional().trim().isString().withMessage('Description should be of type String'),
     body('dueDate').optional().isString().custom(async (date: string) => {
         const dateObj = new Date(date);
         if (dateObj.toString() === 'Invalid Date' || isNaN(dateObj.valueOf())) {

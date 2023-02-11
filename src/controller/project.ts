@@ -23,7 +23,7 @@ export const getProjects = async (req: Request, res: Response) => {
 ;
 
 export const createProjectValidation = [
-    body('name').notEmpty(),
+    body('name').trim().notEmpty(),
     validateResult,
 ];
 export const createProject = async (req: Request, res: Response) => {
@@ -35,7 +35,7 @@ export const createProject = async (req: Request, res: Response) => {
 };
 
 export const updateProjectValidation = [
-    body('name').notEmpty(),
+    body('name').trim().notEmpty(),
     validateResult,
 ];
 export const updateProject = async (req: Request, res: Response) => {

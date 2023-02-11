@@ -16,10 +16,11 @@ const validations = {
         return (await UserRepository.getUserByEmail(email)) ? Promise.reject('E-mail already in use') : null;
     }),
     name: body('name')
+        .trim()
         .notEmpty().withMessage('Should not be empty').bail()
         .isLength({ min: 2 }).withMessage('Should contain at least 2 symbols'),
-    password: body('password').notEmpty().withMessage('Password should not be empty'),
-    passwordRequirements: body('password').isLength({ min: 6 }).withMessage('Should contain at least 6 symbols'),
+    password: body('password').trim().notEmpty().withMessage('Password should not be empty'),
+    passwordRequirements: body('password').isLength({ min: 8 }).withMessage('Should contain at least 6 symbols'),
 };
 
 export const getUser = async (req: Request, res: Response) => {

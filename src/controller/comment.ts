@@ -22,7 +22,7 @@ export const getComments = async (req: Request, res: Response) => {
 };
 
 export const commentValidation = [
-    body('text').notEmpty({ ignore_whitespace: true }).withMessage('Comment text should not be empty').trim(),
+    body('text').trim().notEmpty({ ignore_whitespace: true }).withMessage('Comment text should not be empty'),
     validateResult,
 ];
 
