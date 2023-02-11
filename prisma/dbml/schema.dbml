@@ -86,16 +86,16 @@ Ref: Project.ownerId > User.id
 
 Ref: Member.userId > User.id
 
-Ref: Member.projectId > Project.id
+Ref: Member.projectId > Project.id [delete: Cascade]
 
-Ref: Section.projectId > Project.id
+Ref: Section.projectId > Project.id [delete: Cascade]
 
-Ref: Task.sectionId > Section.id
+Ref: Task.sectionId > Section.id [delete: Cascade]
 
-Ref: Task2Member.memberId > Member.id
+Ref: Task2Member.memberId > Member.id [delete: Cascade]
 
-Ref: Task2Member.taskId > Task.id
+Ref: Task2Member.taskId > Task.id [delete: Cascade]
 
-Ref: Comment.taskId > Task.id
+Ref: Comment.taskId > Task.id [delete: Cascade]
 
 Ref: Comment.userId > User.id
