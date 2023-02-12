@@ -24,10 +24,20 @@ export class MemberRepository {
     }
 
     static addMember = (userId: string, projectId: string) => {
-        return prisma.member.create({
-            data: {
+        return prisma.member.upsert({
+            create: {
                 userId,
                 projectId
+            },
+            update: {
+                userId,
+                projectId
+            },
+            where: {
+                user_project: {
+                    userId,
+                    projectId
+                }
             },
             include: {
                 project: true,

@@ -78,10 +78,20 @@ export class TaskRepository {
     }
 
     static async assignMember(taskId: string, memberId: string) {
-        return prisma.task2Member.create({
-            data: {
+        return prisma.task2Member.upsert({
+            create: {
                 taskId,
                 memberId
+            },
+            update: {
+                taskId,
+                memberId
+            },
+            where: {
+                task_member: {
+                    taskId,
+                    memberId
+                }
             },
             include: {
                 member: {

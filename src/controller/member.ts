@@ -42,6 +42,7 @@ export const addMember = async (req: Request, res: Response) => {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('User with this email is not found'));
     }
 
+
     const member = await MemberRepository.addMember(user.id, projectId);
     const result = MemberSerializer.serialize(member);
 

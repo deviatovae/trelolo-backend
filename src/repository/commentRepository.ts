@@ -92,12 +92,6 @@ export class CommentRepository {
     }
 
     static async addLike(commentId: string, userId: string) {
-        // return prisma.commentLike.create({
-        //     data: {
-        //         commentId,
-        //         userId,
-        //     },
-        // });
         return prisma.commentLike.upsert({
             create: {
                 commentId,
