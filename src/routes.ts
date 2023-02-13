@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {
-    login,
-    loginValidation,
     createUser,
     createUserValidation,
     getUser,
+    login,
+    loginValidation,
     updateUser,
     updateUserValidation
 } from './controller/user';
@@ -30,7 +30,8 @@ import {
     createTask,
     createTaskValidation,
     deleteTask,
-    getTasks, removeAssignee,
+    getTasks,
+    removeAssignee,
     updateTask,
     updateTaskValidation
 } from './controller/task';
@@ -38,7 +39,8 @@ import { wrapHandler } from './utils/handlerWrapper';
 import { addMember, createMemberValidation, getMembers, removeMember } from './controller/member';
 import {
     addComment,
-    addCommentLike, commentValidation,
+    addCommentLike,
+    commentValidation,
     deleteComment,
     deleteCommentLike,
     getComments,
