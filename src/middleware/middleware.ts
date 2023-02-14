@@ -4,6 +4,7 @@ import { UserRepository } from '../repository/userRepository';
 import { validationResult } from 'express-validator';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapValidationErrors } from '../utils/resWrapper';
+import { ResponseTimeFunction } from 'response-time';
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('X-TOKEN');
@@ -33,6 +34,14 @@ export const validateResult = (req: Request, res: Response, next: NextFunction) 
     }
 
     next();
+};
+
+export const responseTimeCallback: ResponseTimeFunction = (req, res, time) => {
+    const s = Math.trunc(time / 1000);
+    const ms = Math.trunc(time - s * 1000);
+    const executionTime = [s, ms].filter(t => !!t).join('.');
+
+    console.log(`[${req.method || '?'}] ${req.url || '?'} - ${executionTime}ms`);
 };
 
 export default { auth };

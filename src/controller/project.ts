@@ -15,10 +15,8 @@ const getUserProjectByReq = async (req: Request): Promise<Project | null> => {
 };
 
 export const getProjects = async (req: Request, res: Response) => {
-    console.log(Date.now());
         const userId = getUserIdByReq(req);
         const projects = await ProjectRepository.getProjectsByUserId(userId);
-    console.log(Date.now());
 
         return res.json(wrapListResult<Project>(projects));
     }
