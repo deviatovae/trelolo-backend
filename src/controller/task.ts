@@ -118,3 +118,23 @@ export const removeAssignee = async (req: Request, res: Response) => {
     const result = TaskAssigneeSerializer.serialize(removedAssignee);
     return res.json(wrapResult<TaskAssigneeResult>(result));
 };
+
+
+export const moveTask = async (req: Request, res: Response) => {
+    const { taskId, sectionId } = req.params;
+    const userId = getUserIdByReq(req);
+
+    const task = await TaskRepository.getTaskByIdAndUserId(taskId, userId);
+    if (!task) {
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
+    }
+
+    const section = await SectionRepository.getSectionByIdAndUserId(sectionId, userId);
+    if (!section) {
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Section is not found'));
+
+    }
+
+    const movedTask = await TaskRepository.moveTask(taskId, sectionId);
+    return res.json(wrapResult<Task>(movedTask));
+};

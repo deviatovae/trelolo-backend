@@ -124,4 +124,15 @@ export class TaskRepository {
             }
         });
     }
+
+    static async moveTask(taskId: string, sectionId: string) {
+        return prisma.task.update({
+            where: {
+                id: taskId,
+            },
+            data: {
+                sectionId
+            }
+        });
+    }
 }
