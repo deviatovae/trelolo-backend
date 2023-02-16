@@ -179,4 +179,34 @@ export class TaskRepository {
             }
         });
     }
+
+    static async getAllTasks(userId: string, isAssignedToUser = false) {
+        return prisma.task.findMany({
+            where: {
+                assignees: {
+                    ...(isAssignedToUser ? { some: { member: { userId } } } : {})
+                },
+                section: {
+                    project: {
+                        OR: [
+                            { ownerId: userId },
+                            { members: { some: { userId } } }
+                        ]
+                    }
+                }
+            },
+            include: {
+                assignees: true,
+                section: {
+                    include: {
+                        project: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 }

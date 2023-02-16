@@ -5,11 +5,30 @@ import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
 import { Task } from '@prisma/client';
 import { TaskRepository } from '../repository/taskRepository';
 import { SectionRepository } from '../repository/sectionRepository';
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
 import { TaskAssigneeResult, UpdateTaskRequestBody, UpdateTaskRequestParams } from '../types/types';
 import { MemberRepository } from '../repository/memberRepository';
 import { TaskAssigneeSerializer } from '../serializer/taskAssigneeSerializer';
+
+export enum TaskAssigneeTo {
+    Me = 'me',
+}
+
+export const getAllTasksValidation = [
+    query('assignee').optional().custom(async (value: string) => {
+        if (!value || !Object.values<string>(TaskAssigneeTo).includes(value)) {
+            await Promise.reject('Assignee param is incorrect');
+        }
+    }),
+    validateResult
+];
+
+export const getAllTasks = async (req: Request, res: Response) => {
+    const { assignee } = req.query;
+    const tasks = await TaskRepository.getAllTasks(getUserIdByReq(req), assignee === TaskAssigneeTo.Me);
+    return res.json(wrapListResult<Task>(tasks));
+};
 
 export const getTasks = async (req: Request, res: Response) => {
     const { sectionId } = req.params;

@@ -29,7 +29,7 @@ import {
     assignMember,
     createTask,
     createTaskValidation,
-    deleteTask,
+    deleteTask, getAllTasks, getAllTasksValidation,
     getTasks, moveTask, moveTaskValidation,
     removeAssignee,
     updateTask,
@@ -69,6 +69,7 @@ router.delete('/sections/:sectionId', wrapHandler(deleteSection));
 
 router.get('/sections/:sectionId/tasks', wrapHandler(getTasks));
 router.post('/sections/:sectionId/tasks', ...createTaskValidation, wrapHandler(createTask));
+router.get('/tasks', ...getAllTasksValidation, wrapHandler(getAllTasks));
 router.patch('/tasks/:taskId', ...updateTaskValidation, wrapHandler(updateTask));
 router.delete('/tasks/:taskId', wrapHandler(deleteTask));
 router.patch('/tasks/:taskId/move/:sectionId', ...moveTaskValidation, wrapHandler(moveTask));
