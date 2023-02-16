@@ -73,6 +73,12 @@ export const updateTaskValidation = [
         }
     }).toDate(),
     body('isCompleted').optional({ nullable: true }).isBoolean().withMessage('isCompleted should be of type Boolean'),
+    body('assignees').optional({ nullable: true }).isArray().bail().toArray().withMessage('Assignees should be type of Array')
+        .custom(async (assignees: unknown[]) => {
+            if (!assignees.every(assignee => typeof assignee === 'string' && !!assignee)) {
+                await Promise.reject('Assignees should be array of non empty strings');
+            }
+        }),
     validateResult,
 ];
 export const updateTask = async (req: Request<UpdateTaskRequestParams, object, UpdateTaskRequestBody>, res: Response) => {
@@ -84,9 +90,9 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
     }
 
-    const { name, description, dueDate, isCompleted } = req.body;
+    const { name, description, dueDate, isCompleted, assignees } = req.body;
     const dueDateObj = dueDate ? new Date(dueDate) : undefined;
-    const updatedTask = await TaskRepository.updateTask(taskId, name, description, dueDateObj, isCompleted);
+    const updatedTask = await TaskRepository.updateTask(taskId, name, description, dueDateObj, isCompleted, assignees);
 
     return res.json(wrapResult<Task>(updatedTask));
 };

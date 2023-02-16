@@ -32,6 +32,7 @@ export type UpdateTaskRequestBody = {
     description?: string
     dueDate?: string
     isCompleted?: boolean
+    assignees?: string[]
 };
 
 export type BaseMemberInfo = {

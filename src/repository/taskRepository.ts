@@ -96,7 +96,14 @@ export class TaskRepository {
         });
     };
 
-    static updateTask = async (id: string, name?: string, description?: string, dueDate?: Date, isCompleted?: boolean) => {
+    static updateTask = async (id: string, name?: string, description?: string, dueDate?: Date, isCompleted?: boolean, assignees?: string[]) => {
+        await prisma.$transaction([
+            ...(assignees ? [prisma.task2Member.deleteMany({ where: { taskId: id } })] : []),
+            ...(assignees?.length ? [prisma.task2Member.createMany({
+                data: assignees.map(memberId => ({ taskId: id, memberId }))
+            })] : []),
+        ]);
+
         return prisma.task.update({
             where: {
                 id
@@ -106,6 +113,9 @@ export class TaskRepository {
                 description,
                 dueDate,
                 isCompleted,
+            },
+            include: {
+                assignees: true
             }
         });
     };
