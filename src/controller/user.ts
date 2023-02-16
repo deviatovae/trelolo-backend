@@ -54,9 +54,9 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUserValidation = [
-    validations.name.optional(),
-    validations.password.optional(),
-    validations.passwordRequirements.optional(),
+    validations.name.optional({ nullable: true }),
+    validations.password.optional({ nullable: true }),
+    validations.passwordRequirements.optional({ nullable: true }),
     validateResult,
 ];
 

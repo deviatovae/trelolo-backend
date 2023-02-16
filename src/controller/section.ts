@@ -40,8 +40,8 @@ export const createSection = async (req: Request, res: Response) => {
 };
 
 export const updateSectionValidation = [
-    body('name').optional().trim().notEmpty().withMessage('Name should not be empty'),
-    body('position').optional().isNumeric().withMessage('Position should be numeric'),
+    body('name').optional({ nullable: true }).trim().notEmpty().withMessage('Name should not be empty'),
+    body('position').optional({ nullable: true }).isNumeric().withMessage('Position should be numeric'),
     validateResult,
 ];
 export const updateSection = async (req: Request, res: Response) => {

@@ -44,16 +44,16 @@ export const createTask = async (req: Request, res: Response) => {
 };
 
 export const updateTaskValidation = [
-    body('name').optional().trim().notEmpty().withMessage('Name should not be empty'),
-    body('position').optional().isNumeric().withMessage('Position should be numeric'),
-    body('description').optional().trim().isString().withMessage('Description should be of type String'),
-    body('dueDate').optional().isString().custom(async (date: string) => {
+    body('name').optional({ nullable: true }).trim().notEmpty().withMessage('Name should not be empty'),
+    body('position').optional({ nullable: true }).isNumeric().withMessage('Position should be numeric'),
+    body('description').optional({ nullable: true }).trim().isString().withMessage('Description should be of type String'),
+    body('dueDate').optional({ nullable: true }).isString().custom(async (date: string) => {
         const dateObj = new Date(date);
         if (dateObj.toString() === 'Invalid Date' || isNaN(dateObj.valueOf())) {
             await Promise.reject('Due Date should be a valid date');
         }
     }).toDate(),
-    body('isCompleted').optional().isBoolean().withMessage('isCompleted should be of type Boolean'),
+    body('isCompleted').optional({ nullable: true }).isBoolean().withMessage('isCompleted should be of type Boolean'),
     validateResult,
 ];
 export const updateTask = async (req: Request<UpdateTaskRequestParams, object, UpdateTaskRequestBody>, res: Response) => {
