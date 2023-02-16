@@ -120,14 +120,12 @@ export const removeAssignee = async (req: Request, res: Response) => {
 };
 
 export const moveTaskValidation = [
-    body('position')
-        .notEmpty().withMessage('Position should not be empty').bail()
-        .isNumeric().withMessage('Position should be numeric'),
+    body('position').optional({ nullable: true }).isNumeric().withMessage('Position should be numeric'),
     validateResult
 ];
 export const moveTask = async (req: Request, res: Response) => {
     const { taskId, sectionId } = req.params;
-    const { position } = req.body;
+    const { position = Number.MAX_SAFE_INTEGER } = req.body;
 
     if (position < 1 || position > Number.MAX_SAFE_INTEGER) {
         return res.status(StatusCode.ClientErrorBadRequest).json(wrapError('Position is invalid'));
