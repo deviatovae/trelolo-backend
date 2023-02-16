@@ -12,6 +12,9 @@ export class TaskRepository {
             },
             include: {
                 assignees: true
+            },
+            orderBy: {
+                position: 'asc'
             }
         });
     }
@@ -40,14 +43,66 @@ export class TaskRepository {
         });
     };
 
-    static updateTask = async (id: string, name?: string, position?: number, description?: string, dueDate?: Date, isCompleted?: boolean) => {
+    static moveTask = async (id: string, sectionId: string, position: number) => {
+        return prisma.$transaction(async (tx) => {
+            const task = await tx.task.findFirst({ where: { id } });
+            if (!task) {
+                return;
+            }
+
+            const lastPosition = await tx.task.aggregate({
+                _max: { position: true },
+                where: { section: { id: sectionId } }
+            }).then(agg => agg._max.position);
+
+            const { position: curPosition, sectionId: curSectionId } = task;
+            const isSameSection = curSectionId === sectionId;
+            const toPosition = lastPosition && position > lastPosition ? (isSameSection ? lastPosition : lastPosition + 1) : position;
+
+            console.log(lastPosition, toPosition);
+
+            const isMoveDown = (toPosition - curPosition) > 0;
+            const isSamePosition = curPosition === toPosition;
+
+            if (isSameSection && isSamePosition) {
+                return task;
+            }
+
+            if (isSameSection) {
+                if (isMoveDown) {
+                    await tx.task.updateMany({
+                        data: { position: { decrement: 1 } },
+                        where: { position: { gt: curPosition, lte: toPosition }, sectionId: curSectionId }
+                    });
+                } else {
+
+                    await tx.task.updateMany({
+                        data: { position: { increment: 1 } },
+                        where: { position: { gte: toPosition, lt: curPosition }, sectionId: curSectionId }
+                    });
+                }
+            } else {
+                await tx.task.updateMany({
+                    data: { position: { decrement: 1 } },
+                    where: { position: { gt: curPosition }, sectionId: curSectionId }
+                });
+                await tx.task.updateMany({
+                    data: { position: { increment: 1 } },
+                    where: { position: { gte: toPosition }, sectionId }
+                });
+            }
+
+            return tx.task.update({ data: { position: toPosition, sectionId }, where: { id } });
+        });
+    };
+
+    static updateTask = async (id: string, name?: string, description?: string, dueDate?: Date, isCompleted?: boolean) => {
         return prisma.task.update({
             where: {
                 id
             },
             data: {
                 name,
-                position,
                 description,
                 dueDate,
                 isCompleted,
@@ -121,17 +176,6 @@ export class TaskRepository {
             where: {
                 id: assigneeId,
                 taskId
-            }
-        });
-    }
-
-    static async moveTask(taskId: string, sectionId: string) {
-        return prisma.task.update({
-            where: {
-                id: taskId,
-            },
-            data: {
-                sectionId
             }
         });
     }

@@ -65,9 +65,9 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
     }
 
-    const { name, position, description, dueDate, isCompleted } = req.body;
+    const { name, description, dueDate, isCompleted } = req.body;
     const dueDateObj = dueDate ? new Date(dueDate) : undefined;
-    const updatedTask = await TaskRepository.updateTask(taskId, name, position, description, dueDateObj, isCompleted);
+    const updatedTask = await TaskRepository.updateTask(taskId, name, description, dueDateObj, isCompleted);
 
     return res.json(wrapResult<Task>(updatedTask));
 };
@@ -119,11 +119,21 @@ export const removeAssignee = async (req: Request, res: Response) => {
     return res.json(wrapResult<TaskAssigneeResult>(result));
 };
 
-
+export const moveTaskValidation = [
+    body('position')
+        .notEmpty().withMessage('Position should not be empty').bail()
+        .isNumeric().withMessage('Position should be numeric'),
+    validateResult
+];
 export const moveTask = async (req: Request, res: Response) => {
     const { taskId, sectionId } = req.params;
-    const userId = getUserIdByReq(req);
+    const { position } = req.body;
 
+    if (position < 1 || position > Number.MAX_SAFE_INTEGER) {
+        return res.status(StatusCode.ClientErrorBadRequest).json(wrapError('Position is invalid'));
+    }
+
+    const userId = getUserIdByReq(req);
     const task = await TaskRepository.getTaskByIdAndUserId(taskId, userId);
     if (!task) {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
@@ -132,9 +142,11 @@ export const moveTask = async (req: Request, res: Response) => {
     const section = await SectionRepository.getSectionByIdAndUserId(sectionId, userId);
     if (!section) {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Section is not found'));
-
     }
 
-    const movedTask = await TaskRepository.moveTask(taskId, sectionId);
+    const movedTask = await TaskRepository.moveTask(taskId, sectionId, position);
+    if (!movedTask) {
+        return res.status(StatusCode.ServerErrorInternal).json(wrapError('Move task failed'));
+    }
     return res.json(wrapResult<Task>(movedTask));
 };

@@ -30,7 +30,7 @@ import {
     createTask,
     createTaskValidation,
     deleteTask,
-    getTasks, moveTask,
+    getTasks, moveTask, moveTaskValidation,
     removeAssignee,
     updateTask,
     updateTaskValidation
@@ -71,7 +71,7 @@ router.get('/sections/:sectionId/tasks', wrapHandler(getTasks));
 router.post('/sections/:sectionId/tasks', ...createTaskValidation, wrapHandler(createTask));
 router.patch('/tasks/:taskId', ...updateTaskValidation, wrapHandler(updateTask));
 router.delete('/tasks/:taskId', wrapHandler(deleteTask));
-router.patch('/tasks/:taskId/move/:sectionId', wrapHandler(moveTask));
+router.patch('/tasks/:taskId/move/:sectionId', ...moveTaskValidation, wrapHandler(moveTask));
 
 router.get('/projects/:projectId/members', wrapHandler(getMembers));
 router.post('/projects/:projectId/members', ...createMemberValidation, wrapHandler(addMember));

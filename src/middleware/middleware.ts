@@ -41,7 +41,7 @@ export const responseTimeCallback: ResponseTimeFunction = (req, res, time) => {
     const ms = Math.trunc(time - s * 1000);
     const executionTime = [s, ms].filter(t => !!t).join('.');
 
-    console.log(`[${req.method || '?'}] ${req.url || '?'} - ${executionTime}ms`);
+    console.log(`[${req.method || '?'}] ${req.url || '?'} - ${executionTime}${s ? 's' : 'ms'}`);
 };
 
 export default { auth };
