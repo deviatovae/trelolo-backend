@@ -66,7 +66,14 @@ export const updateTaskValidation = [
     body('name').optional({ nullable: true }).trim().notEmpty().withMessage('Name should not be empty'),
     body('position').optional({ nullable: true }).isNumeric().withMessage('Position should be numeric'),
     body('description').optional({ nullable: true }).trim().isString().withMessage('Description should be of type String'),
-    body('dueDate').optional({ nullable: true }).isString().custom(async (date: string) => {
+    body('dueDate').optional().custom(async (date: unknown) => {
+        if (date === null) {
+            return;
+        }
+        if (typeof date !== 'string') {
+            await Promise.reject('Due Date should be a valid date');
+            return;
+        }
         const dateObj = new Date(date);
         if (dateObj.toString() === 'Invalid Date' || isNaN(dateObj.valueOf())) {
             await Promise.reject('Due Date should be a valid date');
@@ -91,7 +98,7 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
     }
 
     const { name, description, dueDate, isCompleted, assignees } = req.body;
-    const dueDateObj = dueDate ? new Date(dueDate) : undefined;
+    const dueDateObj = typeof dueDate === 'string' ? new Date(dueDate) : dueDate;
     const updatedTask = await TaskRepository.updateTask(taskId, name, description, dueDateObj, isCompleted, assignees);
 
     return res.json(wrapResult<Task>(updatedTask));

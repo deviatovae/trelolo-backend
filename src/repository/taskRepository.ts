@@ -59,8 +59,6 @@ export class TaskRepository {
             const isSameSection = curSectionId === sectionId;
             const toPosition = lastPosition && position > lastPosition ? (isSameSection ? lastPosition : lastPosition + 1) : position;
 
-            console.log(lastPosition, toPosition);
-
             const isMoveDown = (toPosition - curPosition) > 0;
             const isSamePosition = curPosition === toPosition;
 
@@ -72,23 +70,30 @@ export class TaskRepository {
                 if (isMoveDown) {
                     await tx.task.updateMany({
                         data: { position: { decrement: 1 } },
-                        where: { position: { gt: curPosition, lte: toPosition }, sectionId: curSectionId }
+                        where: {
+                            position: { gt: curPosition, lte: toPosition },
+                            sectionId: curSectionId,
+                            id: { not: id }
+                        }
                     });
                 } else {
-
                     await tx.task.updateMany({
                         data: { position: { increment: 1 } },
-                        where: { position: { gte: toPosition, lt: curPosition }, sectionId: curSectionId }
+                        where: {
+                            position: { gte: toPosition, lt: curPosition },
+                            sectionId: curSectionId,
+                            id: { not: id }
+                        }
                     });
                 }
             } else {
                 await tx.task.updateMany({
                     data: { position: { decrement: 1 } },
-                    where: { position: { gt: curPosition }, sectionId: curSectionId }
+                    where: { position: { gt: curPosition }, sectionId: curSectionId, id: { not: id } }
                 });
                 await tx.task.updateMany({
                     data: { position: { increment: 1 } },
-                    where: { position: { gte: toPosition }, sectionId }
+                    where: { position: { gte: toPosition }, sectionId, id: { not: id } }
                 });
             }
 
@@ -96,7 +101,7 @@ export class TaskRepository {
         });
     };
 
-    static updateTask = async (id: string, name?: string, description?: string, dueDate?: Date, isCompleted?: boolean, assignees?: string[]) => {
+    static updateTask = async (id: string, name?: string, description?: string, dueDate?: Date | null, isCompleted?: boolean, assignees?: string[]) => {
         await prisma.$transaction([
             ...(assignees ? [prisma.task2Member.deleteMany({ where: { taskId: id } })] : []),
             ...(assignees?.length ? [prisma.task2Member.createMany({
