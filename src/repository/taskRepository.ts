@@ -53,11 +53,11 @@ export class TaskRepository {
             const lastPosition = await tx.task.aggregate({
                 _max: { position: true },
                 where: { section: { id: sectionId } }
-            }).then(agg => agg._max.position);
+            }).then(agg => agg._max.position) || 0;
 
             const { position: curPosition, sectionId: curSectionId } = task;
             const isSameSection = curSectionId === sectionId;
-            const toPosition = lastPosition && position > lastPosition ? (isSameSection ? lastPosition : lastPosition + 1) : position;
+            const toPosition = position > lastPosition ? (isSameSection ? lastPosition : lastPosition + 1) : position;
 
             const isMoveDown = (toPosition - curPosition) > 0;
             const isSamePosition = curPosition === toPosition;
@@ -68,7 +68,7 @@ export class TaskRepository {
 
             if (isSameSection) {
                 if (isMoveDown) {
-                    await tx.task.updateMany({
+                    tx.task.updateMany({
                         data: { position: { decrement: 1 } },
                         where: {
                             position: { gt: curPosition, lte: toPosition },
@@ -77,7 +77,7 @@ export class TaskRepository {
                         }
                     });
                 } else {
-                    await tx.task.updateMany({
+                    tx.task.updateMany({
                         data: { position: { increment: 1 } },
                         where: {
                             position: { gte: toPosition, lt: curPosition },
@@ -87,11 +87,11 @@ export class TaskRepository {
                     });
                 }
             } else {
-                await tx.task.updateMany({
+                tx.task.updateMany({
                     data: { position: { decrement: 1 } },
                     where: { position: { gt: curPosition }, sectionId: curSectionId, id: { not: id } }
                 });
-                await tx.task.updateMany({
+                tx.task.updateMany({
                     data: { position: { increment: 1 } },
                     where: { position: { gte: toPosition }, sectionId, id: { not: id } }
                 });
