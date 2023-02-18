@@ -52,13 +52,19 @@ export const addMember = async (req: Request, res: Response) => {
 export const removeMember = async (req: Request, res: Response) => {
     const { memberId } = req.params;
     const member = await MemberRepository.getMemberById(memberId);
+    const userId = getUserIdByReq(req);
+
     if (!member) {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Member is not found'));
     }
 
-    const project = await ProjectRepository.getProjectByIdAndUserId(member.projectId, getUserIdByReq(req));
+    const project = await ProjectRepository.getProjectByIdAndUserId(member.projectId, userId);
     if (!project) {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
+    }
+
+    if (member.userId === userId && project.ownerId === userId) {
+        return res.status(StatusCode.ClientErrorBadRequest).json(wrapError(`You cannot delete yourself from the project "${project.name}"`));
     }
 
     const removedMember = await MemberRepository.removeMember(memberId);

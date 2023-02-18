@@ -6,6 +6,7 @@ import { getUserIdByReq } from '../service/user';
 import { Project } from '@prisma/client';
 import { ProjectRepository } from '../repository/projectRepository';
 import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
+import { MemberRepository } from '../repository/memberRepository';
 
 const getUserProjectByReq = async (req: Request): Promise<Project | null> => {
     const id = req.params.id as string;
@@ -30,6 +31,7 @@ export const createProject = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
     const { name }: { name: string } = req.body;
     const project = await ProjectRepository.createProject(name, userId);
+    MemberRepository.addMember(userId, project.id);
 
     return res.json(wrapResult<Project>(project));
 };
