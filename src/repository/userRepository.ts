@@ -15,18 +15,19 @@ export class UserRepository {
         });
     }
 
-    static async createUser(email: string, name: string, password: string, salt: string) {
+    static async createUser(email: string, name: string, password: string, salt: string, colorHue?: number | null) {
         return prisma.user.create({
             data: {
                 email,
                 name,
                 password,
-                salt
+                salt,
+                colorHue
             },
         });
     }
 
-    static async updateUser(id: string, name?: string, password?: string, salt?: string) {
+    static async updateUser(id: string, name?: string, password?: string, salt?: string, colorHue?: number | null) {
         return prisma.user.update({
             where: {
                 id
@@ -34,7 +35,8 @@ export class UserRepository {
             data: {
                 name,
                 password,
-                salt
+                salt,
+                colorHue
             },
         });
     }

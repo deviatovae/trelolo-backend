@@ -31,7 +31,7 @@ export const createProject = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
     const { name }: { name: string } = req.body;
     const project = await ProjectRepository.createProject(name, userId);
-    MemberRepository.addMember(userId, project.id);
+    await MemberRepository.addMember(userId, project.id);
 
     return res.json(wrapResult<Project>(project));
 };

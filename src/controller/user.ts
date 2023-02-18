@@ -6,7 +6,7 @@ import { UserRepository } from '../repository/userRepository';
 import { validateResult } from '../middleware/middleware';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapResult } from '../utils/resWrapper';
-import { LoginResult, UserInfo } from '../types/types';
+import { UserInfo } from '../types/types';
 import { getUserIdByReq } from '../service/user';
 import { UserSerializer } from '../serializer/userSerializer';
 
@@ -21,6 +21,19 @@ const validations = {
         .isLength({ min: 2 }).withMessage('Should contain at least 2 symbols'),
     password: body('password').trim().notEmpty().withMessage('Password should not be empty'),
     passwordRequirements: body('password').isLength({ min: 8 }).withMessage('Should contain at least 6 symbols'),
+    colorHue: body('colorHue').optional().custom(async (color: unknown) => {
+        if (color === null) {
+            return;
+        }
+        if (typeof color !== 'number') {
+            await Promise.reject('ColorHue should be numeric');
+            return;
+        }
+        if (color < 0 || color > 360) {
+            await Promise.reject('ColorHue should be a number between 0 and 360');
+            return;
+        }
+    })
 };
 
 export const getUser = async (req: Request, res: Response) => {
@@ -40,14 +53,15 @@ export const createUserValidation = [
     validations.name,
     validations.password,
     validations.passwordRequirements,
+    validations.colorHue,
     validateResult,
 ];
 export const createUser = async (req: Request, res: Response) => {
-    const { email, name, password }: { email: string; name: string, password: string } = req.body;
+    const { email, name, password, colorHue } = req.body;
     const salt = await bcrypt.genSalt(8);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const user = await UserRepository.createUser(email, name, passwordHash, salt);
+    const user = await UserRepository.createUser(email, name, passwordHash, salt, colorHue);
     const result = UserSerializer.serialize(user);
 
     return res.json(wrapResult<UserInfo>(result));
@@ -57,16 +71,17 @@ export const updateUserValidation = [
     validations.name.optional({ nullable: true }),
     validations.password.optional({ nullable: true }),
     validations.passwordRequirements.optional({ nullable: true }),
+    validations.colorHue,
     validateResult,
 ];
 
 export const updateUser = async (req: Request, res: Response) => {
-    const { name, password }: { name?: string, password?: string } = req.body;
+    const { name, password, colorHue } = req.body;
     const salt = password ? await bcrypt.genSalt(8) : undefined;
     const passwordHash = password && salt ? await bcrypt.hash(password, salt) : undefined;
     const userId = getUserIdByReq(req);
 
-    const user = await UserRepository.updateUser(userId, name, passwordHash, salt);
+    const user = await UserRepository.updateUser(userId, name, passwordHash, salt, colorHue);
     const result = UserSerializer.serialize(user);
 
     return res.json(wrapResult<UserInfo>(result));
@@ -85,12 +100,10 @@ export const login = async (req: Request, res: Response) => {
         return res.status(StatusCode.ClientErrorForbidden).json(wrapError('Email or password is incorrect'));
     }
 
-    return res.json(wrapResult<LoginResult>({
-        user: {
-            id: user.id,
-            name: user.name,
-            email: user.email
-        },
+    const userInfo = UserSerializer.serialize(user);
+
+    return res.json(wrapResult<{ user: UserInfo, token: string }>({
+        user: userInfo,
         token: createToken(user.id)
     }));
 };

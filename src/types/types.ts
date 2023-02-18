@@ -10,6 +10,7 @@ export type UserInfo = {
     id: string
     email: string
     name: string
+    colorHue: number | null
 };
 
 export type LoginResult = {

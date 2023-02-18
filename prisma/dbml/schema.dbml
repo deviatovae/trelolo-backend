@@ -8,6 +8,7 @@ Table User {
   name String [not null]
   password String [not null]
   salt String [not null]
+  colorHue Int
   membership Member [not null]
   projects Project [not null]
   comments Comment [not null]
