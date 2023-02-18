@@ -30,11 +30,16 @@ export const createMemberValidation = [
 ];
 
 export const addMember = async (req: Request, res: Response) => {
+    const userId = getUserIdByReq(req);
     const { projectId } = req.params;
-    const project = await ProjectRepository.getProjectByIdAndUserId(projectId, getUserIdByReq(req));
+    const project = await ProjectRepository.getProjectByIdAndUserId(projectId, userId);
 
     if (!project) {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
+    }
+
+    if (project.ownerId !== userId) {
+        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Ask the project owner to invite this member'));
     }
 
     const user = await UserRepository.getUserByEmail(req.body.email);
@@ -61,6 +66,10 @@ export const removeMember = async (req: Request, res: Response) => {
     const project = await ProjectRepository.getProjectByIdAndUserId(member.projectId, userId);
     if (!project) {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
+    }
+
+    if (project.ownerId !== userId) {
+        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Ask the project owner to remove this member'));
     }
 
     if (member.userId === userId && project.ownerId === userId) {
