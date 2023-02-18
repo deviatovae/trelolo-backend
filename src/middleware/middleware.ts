@@ -10,18 +10,18 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('X-TOKEN');
     if (token) {
         if (!isTokenValid(token)) {
-            return null;
+            return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Token is invalid'));
         }
 
         try {
             req.user = await UserRepository.getUserById(getUserId(token));
         } catch (e) {
-            console.error(e);
+            return res.status(StatusCode.ServerErrorInternal).json(wrapError('Internal error'));
         }
     }
 
     if (!token || !req.user) {
-        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('User is not authorized'));
+        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Token header is required'));
     }
 
     next();
