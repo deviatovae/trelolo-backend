@@ -54,6 +54,7 @@ export type CommentResult = {
     id: string
     text: string
     likes: number
+    isLiked: boolean
     user: UserInfo
     createdAt: string
     updatedAt?: string

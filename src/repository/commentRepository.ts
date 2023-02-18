@@ -138,4 +138,16 @@ export class CommentRepository {
             where: { commentId }
         }))._count.commentId;
     }
+
+    static async getLikedCommentsByUserId(commentIds: string[], userId: string) {
+        return prisma.commentLike.findMany({
+            select: {
+                commentId: true
+            },
+            where: {
+                commentId: { in: commentIds },
+                userId
+            }
+        }).then((commentLike) => commentLike.map(({ commentId }) => commentId));
+    }
 }
