@@ -7,7 +7,7 @@ import { validateResult } from '../middleware/middleware';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapResult } from '../utils/resWrapper';
 import { UserInfo } from '../types/types';
-import { getUserIdByReq } from '../service/user';
+import { getUserIdByReq, hashPassword } from '../service/user';
 import { UserSerializer } from '../serializer/userSerializer';
 
 const validations = {
@@ -19,8 +19,20 @@ const validations = {
         .trim()
         .notEmpty().withMessage('Should not be empty').bail()
         .isLength({ min: 2 }).withMessage('Should contain at least 2 symbols'),
-    password: body('password').trim().notEmpty().withMessage('Password should not be empty'),
-    passwordRequirements: body('password').isLength({ min: 8 }).withMessage('Should contain at least 6 symbols'),
+    passwordRequirements: body('password').isLength({ min: 6 }).withMessage('Should contain at least 6 symbols'),
+    password: body('password').trim().notEmpty().withMessage('Password should not be empty').bail(),
+    currentPassword: body('currentPassword').trim().custom(async (currentPassword, { req }) => {
+        if (!req.body.password) {
+            return;
+        }
+        const { user } = req;
+        if (!user) {
+            return Promise.reject('User token is incorrect');
+        }
+        if (!currentPassword || await hashPassword(currentPassword, user.salt) !== user.password) {
+            return Promise.reject('Password does not match current');
+        }
+    }),
     colorHue: body('colorHue').optional().custom(async (color: unknown) => {
         if (color === null) {
             return;
@@ -71,15 +83,17 @@ export const updateUserValidation = [
     validations.name.optional({ nullable: true }),
     validations.password.optional({ nullable: true }),
     validations.passwordRequirements.optional({ nullable: true }),
+    validations.currentPassword,
     validations.colorHue,
     validateResult,
 ];
 
 export const updateUser = async (req: Request, res: Response) => {
     const { name, password, colorHue } = req.body;
+    const userId = getUserIdByReq(req);
+
     const salt = password ? await bcrypt.genSalt(8) : undefined;
     const passwordHash = password && salt ? await bcrypt.hash(password, salt) : undefined;
-    const userId = getUserIdByReq(req);
 
     const user = await UserRepository.updateUser(userId, name, passwordHash, salt, colorHue);
     const result = UserSerializer.serialize(user);
@@ -93,7 +107,7 @@ export const loginValidation = [
 ];
 export const login = async (req: Request, res: Response) => {
     const user = await UserRepository.getUserByEmail(req.body.email);
-    const passwordHash = user && await bcrypt.hash(req.body.password, user.salt);
+    const passwordHash = user && await hashPassword(req.body.password, user.salt);
     const isPasswordMatch = user?.password === passwordHash;
 
     if (!user || !isPasswordMatch) {
