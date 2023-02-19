@@ -7,13 +7,15 @@ import { TaskRepository } from '../repository/taskRepository';
 import { SectionRepository } from '../repository/sectionRepository';
 import { body, query } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
-import { TaskAssigneeResult, UpdateTaskRequestBody, UpdateTaskRequestParams } from '../types/types';
+import {
+    TaskAssigneeResult,
+    TaskAssigneeTo,
+    TaskWithAssignees,
+    UpdateTaskRequestBody,
+    UpdateTaskRequestParams
+} from '../types/types';
 import { MemberRepository } from '../repository/memberRepository';
 import { TaskAssigneeSerializer } from '../serializer/taskAssigneeSerializer';
-
-export enum TaskAssigneeTo {
-    Me = 'me',
-}
 
 export const getAllTasksValidation = [
     query('assignee').optional().custom(async (value: string) => {
@@ -59,7 +61,10 @@ export const createTask = async (req: Request, res: Response) => {
     const position = await TaskRepository.getLastPosition(sectionId) || 0;
     const task = await TaskRepository.createTask(sectionId, name, position + 1);
 
-    return res.json(wrapResult<Task>(task));
+    return res.json(wrapResult<TaskWithAssignees>({
+        ...task,
+        assignees: []
+    }));
 };
 
 export const updateTaskValidation = [
@@ -101,7 +106,7 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
     const dueDateObj = typeof dueDate === 'string' ? new Date(dueDate) : dueDate;
     const updatedTask = await TaskRepository.updateTask(taskId, name, description, dueDateObj, isCompleted, assignees);
 
-    return res.json(wrapResult<Task>(updatedTask));
+    return res.json(wrapResult<TaskWithAssignees>(updatedTask));
 };
 
 export const deleteTask = async (req: Request<UpdateTaskRequestParams, object, UpdateTaskRequestBody>, res: Response) => {
@@ -178,5 +183,5 @@ export const moveTask = async (req: Request, res: Response) => {
     if (!movedTask) {
         return res.status(StatusCode.ServerErrorInternal).json(wrapError('Move task failed'));
     }
-    return res.json(wrapResult<Task>(movedTask));
+    return res.json(wrapResult<TaskWithAssignees>(movedTask));
 };

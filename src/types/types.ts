@@ -1,4 +1,4 @@
-import { Project } from '@prisma/client';
+import { Project, Task, Task2Member } from '@prisma/client';
 
 export type Result<D, E> = {
     result: boolean,
@@ -46,6 +46,10 @@ export type MemberResult = BaseMemberInfo & {
     project: Project
 };
 
+export type TaskWithAssignees = Task & {
+    assignees: Task2Member[]
+};
+
 export type TaskAssigneeResult = {
     id: string
     member: BaseMemberInfo
@@ -60,3 +64,7 @@ export type CommentResult = {
     createdAt: string
     updatedAt?: string
 };
+
+export enum TaskAssigneeTo {
+    Me = 'me',
+}

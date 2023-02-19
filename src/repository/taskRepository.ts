@@ -45,7 +45,7 @@ export class TaskRepository {
 
     static moveTask = async (id: string, sectionId: string, position: number) => {
         return prisma.$transaction(async (tx) => {
-            const task = await tx.task.findFirst({ where: { id } });
+            const task = await tx.task.findFirst({ where: { id }, include: { assignees: true } });
             if (!task) {
                 return;
             }
@@ -97,7 +97,11 @@ export class TaskRepository {
                 });
             }
 
-            return tx.task.update({ data: { position: toPosition, sectionId }, where: { id } });
+            return tx.task.update({
+                data: { position: toPosition, sectionId },
+                where: { id },
+                include: { assignees: true }
+            });
         });
     };
 
