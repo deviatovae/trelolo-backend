@@ -21,7 +21,7 @@ import {
     createSection,
     createSectionValidation,
     deleteSection,
-    getSections,
+    getSections, moveSection, moveSectionValidation,
     updateSection,
     updateSectionValidation
 } from './controller/section';
@@ -66,6 +66,7 @@ router.get('/projects/:projectId/sections', wrapHandler(getSections));
 router.post('/projects/:projectId/sections', ...createSectionValidation, wrapHandler(createSection));
 router.patch('/sections/:sectionId', ...updateSectionValidation, wrapHandler(updateSection));
 router.delete('/sections/:sectionId', wrapHandler(deleteSection));
+router.patch('/sections/:sectionId/move', ...moveSectionValidation, wrapHandler(moveSection));
 
 router.get('/sections/:sectionId/tasks', wrapHandler(getTasks));
 router.post('/sections/:sectionId/tasks', ...createTaskValidation, wrapHandler(createTask));

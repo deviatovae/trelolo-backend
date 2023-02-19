@@ -68,7 +68,7 @@ export class TaskRepository {
 
             if (isSameSection) {
                 if (isMoveDown) {
-                    tx.task.updateMany({
+                    await tx.task.updateMany({
                         data: { position: { decrement: 1 } },
                         where: {
                             position: { gt: curPosition, lte: toPosition },
@@ -77,7 +77,7 @@ export class TaskRepository {
                         }
                     });
                 } else {
-                    tx.task.updateMany({
+                    await tx.task.updateMany({
                         data: { position: { increment: 1 } },
                         where: {
                             position: { gte: toPosition, lt: curPosition },
@@ -87,14 +87,16 @@ export class TaskRepository {
                     });
                 }
             } else {
-                tx.task.updateMany({
-                    data: { position: { decrement: 1 } },
-                    where: { position: { gt: curPosition }, sectionId: curSectionId, id: { not: id } }
-                });
-                tx.task.updateMany({
-                    data: { position: { increment: 1 } },
-                    where: { position: { gte: toPosition }, sectionId, id: { not: id } }
-                });
+                await Promise.all([
+                    tx.task.updateMany({
+                        data: { position: { decrement: 1 } },
+                        where: { position: { gt: curPosition }, sectionId: curSectionId, id: { not: id } }
+                    }),
+                    tx.task.updateMany({
+                        data: { position: { increment: 1 } },
+                        where: { position: { gte: toPosition }, sectionId, id: { not: id } }
+                    }),
+                ]);
             }
 
             return tx.task.update({
