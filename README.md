@@ -190,7 +190,8 @@ Authorize user and return JWT token
     "user": {
       "id": "63dd8048d70ca740655d684d",
       "name": "Test",
-      "email": "test2@gmail.com"
+      "email": "test2@gmail.com",
+      "hueColor": null
     },
     "data": {
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJpZCI6IjYzZGQxZDMzMjM4YWI0NGMwZGU1NGExMiIsImlvdCI6MTY3NTQzNTQ4NTIwNH0=.ZzLHFnYu2Z89Finv4mRjAzheo87oBqkrJd0hIcBfg+0="
@@ -235,7 +236,8 @@ Returns user details
     "data": {
         "id": "63dd8048d70ca740655d684d",
         "name": "Test",
-        "email": "test2@gmail.com"
+        "email": "test2@gmail.com",
+        "hueColor": null
     },
     "errors": null
   }
@@ -259,13 +261,16 @@ Update user details
 
 * **Body**
 
-    * All fields are optional
+  * All fields are optional except for when changing password. It requires `password` + `currentPassword`.
     ```json
     {
       "name": "Junior Developer",
-      "password": "qwerty"
+      "currentPassword": "qwerty",
+      "password": "qwerty123456",
+      "colorHue": 250
     }
     ```
+  - `colorHue`: number | null
 ---
 
 * **Success response** - `200 OK`
@@ -276,7 +281,8 @@ Update user details
     "data": {
         "id": "63dd1d33238ab44c0de54a12",
         "name": "Junior Developer",
-        "email": "test@gmail.com"
+        "email": "test@gmail.com",
+        "colorHue": 250
     },
     "errors": null
   }
@@ -1016,7 +1022,6 @@ Create task comment
 
   - **Content-Type:** `application/json` [required]
   - **X-TOKEN:** `<User JWT token>` [required]
-
 
 * **Body**
     ```json
