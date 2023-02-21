@@ -17,7 +17,6 @@ export const getComments = async (req: Request, res: Response) => {
     const commentIds = comments.map(comment => comment.id);
     const commentsLikes = await CommentRepository.getCommentsLikes(commentIds);
     const likedComments = await CommentRepository.getLikedCommentsByUserId(commentIds, userId);
-    console.log(likedComments);
 
     const likesByCommentId = commentsLikes.reduce((acc, item) => acc.set(item.commentId, item._count.commentId), new Map<string, number>());
     const result = comments.map(comment => {

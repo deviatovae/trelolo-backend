@@ -78,8 +78,6 @@ export const moveSection = async (req: Request, res: Response) => {
     const { sectionId } = req.params;
     const { position = Number.MAX_SAFE_INTEGER } = req.body;
 
-    console.log(position);
-
     if (position < 1 || position > Number.MAX_SAFE_INTEGER) {
         return res.status(StatusCode.ClientErrorBadRequest).json(wrapError('Position is invalid'));
     }
@@ -90,7 +88,6 @@ export const moveSection = async (req: Request, res: Response) => {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Section is not found'));
     }
 
-    console.log(position);
     const movedSection = await SectionRepository.moveSection(sectionId, position);
     if (!movedSection) {
         return res.status(StatusCode.ServerErrorInternal).json(wrapError('Move section failed'));

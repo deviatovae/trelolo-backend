@@ -42,10 +42,7 @@ export const updateProject = async (req: Request, res: Response) => {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
     }
 
-    console.log(userId, project);
-
     if (project.ownerId !== userId) {
-        console.log(111);
         return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Ask the project owner to update this project'));
     }
 
