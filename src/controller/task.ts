@@ -104,6 +104,14 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
 
     const { name, description, dueDate, isCompleted, assignees } = req.body;
     const dueDateObj = typeof dueDate === 'string' ? new Date(dueDate) : dueDate;
+
+    if (assignees) {
+        const members = await MemberRepository.getMembersById(assignees);
+        if (members.length !== assignees.length) {
+            return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Member(s) with given ids is not found'));
+        }
+    }
+
     const updatedTask = await TaskRepository.updateTask(taskId, name, description, dueDateObj, isCompleted, assignees);
 
     return res.json(wrapResult<TaskWithAssignees>(updatedTask));

@@ -11,6 +11,10 @@ export class MemberRepository {
         });
     }
 
+    static getMembersById(ids: string[]) {
+        return prisma.member.findMany({ where: { id: { in: ids } } });
+    }
+
     static getMembersByProjectId(projectId: string) {
         return prisma.member.findMany({
             where: {
