@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
 import { ProjectRepository } from '../repository/projectRepository';
 import { getUserIdByReq } from '../service/user';
@@ -11,7 +11,12 @@ import { MemberResult } from '../types/types';
 import { MemberSerializer } from '../serializer/memberSerializer';
 import { vt } from '../utils/translation';
 import { Message } from '../types/message';
+import { ObjectId } from '../utils/objectId';
 
+export const getMembersValidation = [
+    param('projectId').custom(ObjectId.validator),
+    validateResult
+];
 export const getMembers = async (req: Request, res: Response) => {
     const { projectId } = req.params;
     const project = await ProjectRepository.getProjectByIdAndUserId(projectId, getUserIdByReq(req));
@@ -26,11 +31,11 @@ export const getMembers = async (req: Request, res: Response) => {
     return res.json(wrapListResult<MemberResult>(result));
 };
 
-export const createMemberValidation = [
+export const addMembersValidation = [
+    param('projectId').custom(ObjectId.validator),
     body('email').isEmail().withMessage(vt(Message.IsEmail)),
-    validateResult,
+    validateResult
 ];
-
 export const addMember = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
     const { projectId } = req.params;
@@ -49,13 +54,16 @@ export const addMember = async (req: Request, res: Response) => {
         return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.UserWithThisEmailIsNotFound)));
     }
 
-
     const member = await MemberRepository.addMember(user.id, projectId);
     const result = MemberSerializer.serialize(member);
 
     return res.json(wrapResult<MemberResult>(result));
 };
 
+export const removeMembersValidation = [
+    param('memberId').custom(ObjectId.validator),
+    validateResult
+];
 export const removeMember = async (req: Request, res: Response) => {
     const { memberId } = req.params;
     const member = await MemberRepository.getMemberById(memberId);

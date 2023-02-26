@@ -6,10 +6,16 @@ import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
 import { CommentResult } from '../types/types';
 import { TaskRepository } from '../repository/taskRepository';
 import StatusCode from 'status-code-enum';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
 import { vt } from '../utils/translation';
 import { Message } from '../types/message';
+import { ObjectId } from '../utils/objectId';
+
+export const getCommentsValidation = [
+    param('taskId').custom(ObjectId.validator),
+    validateResult,
+];
 
 export const getComments = async (req: Request, res: Response) => {
     const { taskId } = req.params;
@@ -31,6 +37,7 @@ export const getComments = async (req: Request, res: Response) => {
 };
 
 export const commentValidation = [
+    param('taskId').custom(ObjectId.validator),
     body('text').trim().notEmpty({ ignore_whitespace: true }).withMessage(vt(Message.NotEmpty)),
     validateResult,
 ];
@@ -68,6 +75,10 @@ export const updateComment = async (req: Request, res: Response) => {
     return res.json(wrapResult<CommentResult>(result));
 };
 
+export const deleteCommentValidation = [
+    param('commentId').custom(ObjectId.validator),
+    validateResult,
+];
 export const deleteComment = async (req: Request, res: Response) => {
     const { commentId } = req.params;
     const userId = getUserIdByReq(req);
@@ -84,6 +95,11 @@ export const deleteComment = async (req: Request, res: Response) => {
     return res.json(wrapResult<CommentResult>(result));
 };
 
+export const addCommentLikeValidation = [
+    param('commentId').custom(ObjectId.validator),
+    validateResult,
+];
+
 export const addCommentLike = async (req: Request, res: Response) => {
     const { commentId } = req.params;
     const userId = getUserIdByReq(req);
@@ -95,7 +111,6 @@ export const addCommentLike = async (req: Request, res: Response) => {
     const commentLike = await CommentRepository.addLike(commentId, userId);
     const likeCounts = await CommentRepository.getCommentLikes(commentId);
 
-
     return res.json(wrapResult({
         id: commentLike.commentId,
         likes: likeCounts,
@@ -103,6 +118,10 @@ export const addCommentLike = async (req: Request, res: Response) => {
     }));
 };
 
+export const deleteCommentLikeValidation = [
+    param('commentId').custom(ObjectId.validator),
+    validateResult,
+];
 export const deleteCommentLike = async (req: Request, res: Response) => {
     const { commentId } = req.params;
     const userId = getUserIdByReq(req);

@@ -5,7 +5,7 @@ import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
 import { Task } from '@prisma/client';
 import { TaskRepository } from '../repository/taskRepository';
 import { SectionRepository } from '../repository/sectionRepository';
-import { body, query } from 'express-validator';
+import { body, param, query } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
 import {
     TaskAssigneeResult,
@@ -18,6 +18,7 @@ import { MemberRepository } from '../repository/memberRepository';
 import { TaskAssigneeSerializer } from '../serializer/taskAssigneeSerializer';
 import { vt } from '../utils/translation';
 import { Message } from '../types/message';
+import { ObjectId } from '../utils/objectId';
 
 export const getAllTasksValidation = [
     query('assignee').optional().custom(async (value: string, { req }) => {
@@ -34,6 +35,11 @@ export const getAllTasks = async (req: Request, res: Response) => {
     return res.json(wrapListResult<Task>(tasks));
 };
 
+export const getTaskValidation = [
+    param('sectionId').custom(ObjectId.validator),
+    validateResult,
+];
+
 export const getTasks = async (req: Request, res: Response) => {
     const { sectionId } = req.params;
     const section = await SectionRepository.getSectionByIdAndUserId(sectionId, getUserIdByReq(req));
@@ -48,6 +54,7 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const createTaskValidation = [
     body('name').trim().notEmpty().withMessage(vt(Message.NotEmpty)),
+    param('sectionId').custom(ObjectId.validator),
     validateResult,
 ];
 
@@ -70,6 +77,7 @@ export const createTask = async (req: Request, res: Response) => {
 };
 
 export const updateTaskValidation = [
+    param('taskId').custom(ObjectId.validator),
     body('name').optional({ nullable: true }).trim().notEmpty().withMessage(vt(Message.NotEmpty)),
     body('position').optional({ nullable: true }).isNumeric().withMessage(vt(Message.IsNumeric)),
     body('description').optional({ nullable: true }).trim().isString().withMessage(vt(Message.IsString)),
@@ -119,6 +127,11 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
     return res.json(wrapResult<TaskWithAssignees>(updatedTask));
 };
 
+export const deleteTaskValidation = [
+    param('taskId').custom(ObjectId.validator),
+    validateResult,
+];
+
 export const deleteTask = async (req: Request<UpdateTaskRequestParams, object, UpdateTaskRequestBody>, res: Response) => {
     const { taskId } = req.params;
     const userId = getUserIdByReq(req);
@@ -133,6 +146,11 @@ export const deleteTask = async (req: Request<UpdateTaskRequestParams, object, U
     return res.json(wrapResult<Task>(deletedTask));
 };
 
+export const assignMemberValidation = [
+    param('taskId').custom(ObjectId.validator),
+    body('memberId').custom(ObjectId.validator),
+    validateResult,
+];
 export const assignMember = async (req: Request, res: Response) => {
     const { taskId } = req.params;
     const task = await TaskRepository.getTaskByIdAndUserId(taskId, getUserIdByReq(req));
@@ -153,6 +171,11 @@ export const assignMember = async (req: Request, res: Response) => {
     return res.json(wrapResult<TaskAssigneeResult>(result));
 };
 
+export const removeAssigneeValidation = [
+    param('assigneeId').custom(ObjectId.validator),
+    param('taskId').custom(ObjectId.validator),
+    validateResult,
+];
 export const removeAssignee = async (req: Request, res: Response) => {
     const { assigneeId, taskId } = req.params;
 
@@ -167,6 +190,8 @@ export const removeAssignee = async (req: Request, res: Response) => {
 };
 
 export const moveTaskValidation = [
+    param('taskId').custom(ObjectId.validator),
+    param('sectionId').custom(ObjectId.validator),
     body('position').optional({ nullable: true }).isNumeric().withMessage(vt(Message.IsNumeric)),
     validateResult
 ];

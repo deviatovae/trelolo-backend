@@ -83,7 +83,7 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUserValidation = [
     validations.name.optional({ nullable: true }),
-    validations.password.optional({ nullable: true }),
+    validations.password.optional(true).optional({ nullable: true }),
     validations.passwordRequirements.optional({ nullable: true }),
     validations.currentPassword,
     validations.colorHue,
@@ -104,8 +104,8 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const loginValidation = [
-    validations.email.optional(false),
-    validations.password.optional(false),
+    validations.email,
+    validations.password,
     validateResult,
 ];
 export const login = async (req: Request, res: Response) => {

@@ -13,6 +13,7 @@ import {
     createProject,
     createProjectValidation,
     deleteProject,
+    deleteProjectValidation,
     getProjects,
     updateProject,
     updateProjectValidation
@@ -21,29 +22,52 @@ import {
     createSection,
     createSectionValidation,
     deleteSection,
-    getSections, moveSection, moveSectionValidation,
+    deleteSectionValidation,
+    getSections,
+    getSectionValidation,
+    moveSection,
+    moveSectionValidation,
     updateSection,
     updateSectionValidation
 } from './controller/section';
 import {
     assignMember,
+    assignMemberValidation,
     createTask,
     createTaskValidation,
-    deleteTask, getAllTasks, getAllTasksValidation,
-    getTasks, moveTask, moveTaskValidation,
+    deleteTask,
+    deleteTaskValidation,
+    getAllTasks,
+    getAllTasksValidation,
+    getTasks,
+    getTaskValidation,
+    moveTask,
+    moveTaskValidation,
     removeAssignee,
+    removeAssigneeValidation,
     updateTask,
     updateTaskValidation
 } from './controller/task';
 import { wrapHandler } from './utils/handlerWrapper';
-import { addMember, createMemberValidation, getMembers, removeMember } from './controller/member';
+import {
+    addMember,
+    addMembersValidation,
+    getMembers,
+    getMembersValidation,
+    removeMember,
+    removeMembersValidation
+} from './controller/member';
 import {
     addComment,
     addCommentLike,
+    addCommentLikeValidation,
     commentValidation,
     deleteComment,
     deleteCommentLike,
+    deleteCommentLikeValidation,
+    deleteCommentValidation,
     getComments,
+    getCommentsValidation,
     updateComment
 } from './controller/comment';
 
@@ -60,31 +84,31 @@ router.patch('/user', ...updateUserValidation, wrapHandler(updateUser));
 router.get('/projects', wrapHandler(getProjects));
 router.post('/projects', ...createProjectValidation, wrapHandler(createProject));
 router.patch('/projects/:id', ...updateProjectValidation, wrapHandler(updateProject));
-router.delete('/projects/:id', wrapHandler(deleteProject));
+router.delete('/projects/:id', ...deleteProjectValidation, wrapHandler(deleteProject));
 
-router.get('/projects/:projectId/sections', wrapHandler(getSections));
+router.get('/projects/:projectId/sections', ...getSectionValidation, wrapHandler(getSections));
 router.post('/projects/:projectId/sections', ...createSectionValidation, wrapHandler(createSection));
 router.patch('/sections/:sectionId', ...updateSectionValidation, wrapHandler(updateSection));
-router.delete('/sections/:sectionId', wrapHandler(deleteSection));
+router.delete('/sections/:sectionId', ...deleteSectionValidation, wrapHandler(deleteSection));
 router.patch('/sections/:sectionId/move', ...moveSectionValidation, wrapHandler(moveSection));
 
-router.get('/sections/:sectionId/tasks', wrapHandler(getTasks));
+router.get('/sections/:sectionId/tasks', ...getTaskValidation, wrapHandler(getTasks));
 router.post('/sections/:sectionId/tasks', ...createTaskValidation, wrapHandler(createTask));
 router.get('/tasks', ...getAllTasksValidation, wrapHandler(getAllTasks));
 router.patch('/tasks/:taskId', ...updateTaskValidation, wrapHandler(updateTask));
-router.delete('/tasks/:taskId', wrapHandler(deleteTask));
+router.delete('/tasks/:taskId', ...deleteTaskValidation, wrapHandler(deleteTask));
 router.patch('/tasks/:taskId/move/:sectionId', ...moveTaskValidation, wrapHandler(moveTask));
 
-router.get('/projects/:projectId/members', wrapHandler(getMembers));
-router.post('/projects/:projectId/members', ...createMemberValidation, wrapHandler(addMember));
+router.get('/projects/:projectId/members', ...getMembersValidation, wrapHandler(getMembers));
+router.post('/projects/:projectId/members', ...addMembersValidation, wrapHandler(addMember));
 
-router.delete('/members/:memberId', wrapHandler(removeMember));
-router.post('/tasks/:taskId/assignee', wrapHandler(assignMember));
-router.delete('/tasks/:taskId/assignee/:assigneeId', wrapHandler(removeAssignee));
+router.delete('/members/:memberId', ...removeMembersValidation, wrapHandler(removeMember));
+router.post('/tasks/:taskId/assignee', ...assignMemberValidation, wrapHandler(assignMember));
+router.delete('/tasks/:taskId/assignee/:assigneeId', ...removeAssigneeValidation, wrapHandler(removeAssignee));
 
-router.get('/tasks/:taskId/comments', wrapHandler(getComments));
-router.post('/tasks/:taskId/comments', commentValidation, wrapHandler(addComment));
-router.patch('/comments/:commentId', commentValidation, wrapHandler(updateComment));
-router.delete('/comments/:commentId', wrapHandler(deleteComment));
-router.post('/comments/:commentId/likes', wrapHandler(addCommentLike));
-router.delete('/comments/:commentId/likes', wrapHandler(deleteCommentLike));
+router.get('/tasks/:taskId/comments', ...getCommentsValidation, wrapHandler(getComments));
+router.post('/tasks/:taskId/comments', ...commentValidation, wrapHandler(addComment));
+router.patch('/comments/:commentId', ...commentValidation, wrapHandler(updateComment));
+router.delete('/comments/:commentId', ...deleteCommentValidation, wrapHandler(deleteComment));
+router.post('/comments/:commentId/likes', ...addCommentLikeValidation, wrapHandler(addCommentLike));
+router.delete('/comments/:commentId/likes', ...deleteCommentLikeValidation, wrapHandler(deleteCommentLike));

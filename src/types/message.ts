@@ -14,6 +14,7 @@ export enum Message {
     InvalidToken = 'validation.incorrectToken',
     IncorrectPassword = 'validation.incorrectPassword',
     IsHue = 'validation.isHue',
+    IsObjectId = 'validation.isObjectId',
     UserIsNotFound = 'error.userIsNotFound',
     TaskIsNotFound = 'error.taskIsNotFound',
     CommentIsNotFound = 'error.commentIsNotFound',
@@ -34,5 +35,5 @@ export enum Message {
     MoveTaskFailed = 'error.moveTaskFailed',
     EmailOrPasswordIsIncorrect = 'error.emailOrPasswordIsIncorrect',
     InternalError = 'error.internalError',
-    TokenHeaderIsRequired = 'error.tokenHeaderIsRequired'
+    TokenHeaderIsRequired = 'error.tokenHeaderIsRequired',
 }

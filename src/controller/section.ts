@@ -5,10 +5,16 @@ import StatusCode from 'status-code-enum';
 import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
 import { SectionRepository } from '../repository/sectionRepository';
 import { Section } from '@prisma/client';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
 import { vt } from '../utils/translation';
 import { Message } from '../types/message';
+import { ObjectId } from '../utils/objectId';
+
+export const getSectionValidation = [
+    param('projectId').custom(ObjectId.validator),
+    validateResult,
+];
 
 export const getSections = async (req: Request, res: Response) => {
     const { projectId } = req.params;
@@ -24,6 +30,7 @@ export const getSections = async (req: Request, res: Response) => {
 
 export const createSectionValidation = [
     body('name').trim().notEmpty().withMessage(vt(Message.NotEmpty)),
+    param('projectId').custom(ObjectId.validator),
     validateResult,
 ];
 export const createSection = async (req: Request, res: Response) => {
@@ -44,6 +51,7 @@ export const createSection = async (req: Request, res: Response) => {
 export const updateSectionValidation = [
     body('name').optional({ nullable: true }).trim().notEmpty().withMessage(vt(Message.NotEmpty)),
     body('position').optional({ nullable: true }).isNumeric().withMessage(vt(Message.IsNumeric)),
+    param('sectionId').custom(ObjectId.validator),
     validateResult,
 ];
 export const updateSection = async (req: Request, res: Response) => {
@@ -60,6 +68,10 @@ export const updateSection = async (req: Request, res: Response) => {
     return res.json(wrapResult<Section>(section));
 };
 
+export const deleteSectionValidation = [
+    param('sectionId').custom(ObjectId.validator),
+    validateResult,
+];
 export const deleteSection = async (req: Request, res: Response) => {
     const { sectionId } = req.params;
     const project = await ProjectRepository.getProjectBySectionIdAndUserId(sectionId, getUserIdByReq(req));
@@ -73,6 +85,7 @@ export const deleteSection = async (req: Request, res: Response) => {
 };
 
 export const moveSectionValidation = [
+    param('sectionId').custom(ObjectId.validator),
     body('position').optional({ nullable: true }).isNumeric().withMessage(vt(Message.IsNumeric)),
     validateResult
 ];

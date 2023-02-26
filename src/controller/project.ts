@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
 import { Request, Response } from 'express';
 import StatusCode from 'status-code-enum';
@@ -9,6 +9,7 @@ import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
 import { MemberRepository } from '../repository/memberRepository';
 import { vt } from '../utils/translation';
 import { Message } from '../types/message';
+import { ObjectId } from '../utils/objectId';
 
 export const getProjects = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
@@ -32,6 +33,7 @@ export const createProject = async (req: Request, res: Response) => {
 
 export const updateProjectValidation = [
     body('name').trim().notEmpty().withMessage(vt(Message.NotEmpty)),
+    param('id').custom(ObjectId.validator),
     validateResult,
 ];
 export const updateProject = async (req: Request, res: Response) => {
@@ -52,6 +54,11 @@ export const updateProject = async (req: Request, res: Response) => {
 
     return res.json(wrapResult<Project>(updatedProject));
 };
+
+export const deleteProjectValidation = [
+    param('id').custom(ObjectId.validator),
+    validateResult,
+];
 
 export const deleteProject = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
