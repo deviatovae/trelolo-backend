@@ -19,16 +19,20 @@ https://trelolo.onrender.com
   - [Create](#create-section)
   - [Update](#update-section)
   - [Delete](#delete-section)
+  - [Move](#move-section)
 - **Tasks**
   - [Get list](#get-tasks)
+  - [Get list by section](#get-section-tasks)
   - [Create](#create-task)
   - [Update](#update-task)
   - [Delete](#delete-task)
+  - [Move](#move-task)
   
   - **Assignee** 
     - [Create](#add-task-assignee)
     - [Delete](#remove-task-assignee)
   - **Comment**
+    - [Get list](#get-task-comments)
     - [Create](#create-task-comment)
     - [Update](#update-task-comment)
     - [Delete](#remove-task-comment)
@@ -722,12 +726,112 @@ Delete section
 
 ---
 
+**Move section**
+---
+`PATCH` **/sections/:sectionId/move**
+
+Move section to another position
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
+
+* **Body**
+
+  ```json
+  {
+    "position": 2
+  }
+  ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63debb3a0adfc89a239a915e",
+        "projectId": "63dd7e968d6ad64745e15a03",
+        "name": "My new section",
+        "position": 2
+    },
+    "errors": null
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Project is not found"
+      ]
+    }
+    ```
+</details>
+
+---
+
 ---
 **Tasks**
 ----
 Endpoints to manage tasks
 
 **Get tasks**
+---
+`GET` **/tasks**
+
+Returns all tasks from all projects available to user 
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "items": [
+            {
+                "id": "63e010ee9f16c8179a251b61",
+                "sectionId": "63debada0adfc89a239a915b",
+                "name": "To infinity and beyond",
+                "position": 1,
+                "description": null,
+                "dueDate": null,
+                "isCompleted": false,
+                "assignees": [],
+                "section": {
+                    "id": "63f3b03345bad859ad22be8d",
+                    "projectId": "63f39831506ccb376915c91d",
+                    "name": "q",
+                    "position": 1,
+                    "project": {
+                        "name": "eerer"
+                    }
+                }
+            }
+        ],
+        "count": 1
+    },
+    "errors": null
+  }
+  ```
+</details>
+
+---
+
+**Get section tasks**
 ---
 `GET` **/sections/:sectionId/tasks**
 
@@ -755,7 +859,8 @@ Returns all tasks belonging to the specified section
                 "position": 1,
                 "description": null,
                 "dueDate": null,
-                "isCompleted": false
+                "isCompleted": false,
+                "assignees": []
             }
         ],
         "count": 1
@@ -801,7 +906,8 @@ Create new task
         "position": 1,
         "description": null,
         "dueDate": null,
-        "isCompleted": false
+        "isCompleted": false,
+        "assignees": []
     },
     "errors": null
   }
@@ -847,7 +953,8 @@ Update task
     "position": 1,
     "description": "Buzz Lighter!",
     "dueDate": "2100-02-06T06:34:56.000Z",
-    "isCompleted": false
+    "isCompleted": false,
+    "assignees": []
     }
     ```
 ---
@@ -864,7 +971,8 @@ Update task
         "position": 1,
         "description": "Buzz Lighter!",
         "dueDate": "2100-02-06T06:34:56.000Z",
-        "isCompleted": false
+        "isCompleted": false,
+        "assignees": []
     },
     "errors": null
   }
@@ -897,7 +1005,67 @@ Delete task
         "id": "63debb3a0adfc89a239a915e",
         "sectionId": "63dd7e968d6ad64745e15a03",
         "name": "My new task",
-        "position": 0
+        "position": 0,
+        "description": "Buzz Lighter!",
+        "dueDate": "2100-02-06T06:34:56.000Z",
+        "isCompleted": false,
+        "assignees": []
+    },
+    "errors": null
+  }
+  ```
+* **Failure response** `404 Not Found`
+    ```json
+    {
+      "result": false,
+      "data": null,
+      "errors": [
+        "Task is not found"
+      ]
+    }
+    ```
+</details>
+
+---
+
+**Move task**
+---
+`PATCH` **/tasks/:taskId**
+
+Move task to another position or section
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
+
+* **Body**
+
+  * All fields are optional
+  ```json
+  {
+    "position": 2,
+    "sectionId": "63dd7e968d6ad64745e15a03"
+  }
+  ```
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "id": "63debb3a0adfc89a239a915e",
+        "sectionId": "63dd7e968d6ad64745e15a03",
+        "name": "My new task",
+        "position": 2,
+        "description": "Buzz Lighter!",
+        "dueDate": "2100-02-06T06:34:56.000Z",
+        "isCompleted": false,
+        "assignees": []
     },
     "errors": null
   }
@@ -1007,6 +1175,50 @@ Remove assigned member from task
     }
     ```
 </details>
+
+---
+
+**Get section tasks**
+---
+`GET` **/sections/:sectionId/tasks**
+
+Returns all tasks belonging to the specified section
+
+<details>
+
+* **Headers**
+
+  - **Content-Type:** `application/json` [required]
+  - **X-TOKEN:** `<User JWT token>` [required]
+---
+
+* **Success response** - `200 OK`
+
+  ```json
+  {
+    "result": true,
+    "data": {
+        "items": [
+          {
+            "id": "63e3efcb96a5f9aa450143bb",
+            "text": "This is an amazing comment!",
+            "user": {
+              "id": "63dd1d33238ab44c0de54a12",
+              "name": "Test User",
+              "email": "test@gmail.com"
+            },
+            "likes": 0,
+            "createdAt": "2023-02-08T18:54:03.027Z"
+          }
+        ],
+        "count": 1
+    },
+    "errors": null
+  }
+  ```
+</details>
+
+---
 
 ---
 
