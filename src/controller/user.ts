@@ -9,40 +9,42 @@ import { wrapError, wrapResult } from '../utils/resWrapper';
 import { UserInfo } from '../types/types';
 import { getUserIdByReq, hashPassword } from '../service/user';
 import { UserSerializer } from '../serializer/userSerializer';
+import { vt } from '../utils/translation';
+import { Message } from '../types/message';
 
 const validations = {
-    email: body('email').isEmail().withMessage('Should be a valid email').bail(),
-    emailExist: body('email').custom(async (email: string) => {
-        return (await UserRepository.getUserByEmail(email)) ? Promise.reject('E-mail already in use') : null;
+    email: body('email').isEmail().withMessage(vt(Message.IsEmail)).bail(),
+    emailExist: body('email').custom(async (email: string, { req }) => {
+        return (await UserRepository.getUserByEmail(email)) ? Promise.reject(req.t(Message.EmailInUse)) : null;
     }),
     name: body('name')
         .trim()
-        .notEmpty().withMessage('Should not be empty').bail()
-        .isLength({ min: 2 }).withMessage('Should contain at least 2 symbols'),
-    passwordRequirements: body('password').isLength({ min: 6 }).withMessage('Should contain at least 6 symbols'),
-    password: body('password').trim().notEmpty().withMessage('Password should not be empty').bail(),
+        .notEmpty().withMessage(vt(Message.NotEmpty)).bail()
+        .isLength({ min: 2 }).withMessage(vt(Message.MinLength2, { count: 2 })),
+    passwordRequirements: body('password').isLength({ min: 6 }).withMessage(vt(Message.MinLength6, { count: 6 })),
+    password: body('password').notEmpty().trim().withMessage(vt(Message.NotEmpty)).bail(),
     currentPassword: body('currentPassword').trim().custom(async (currentPassword, { req }) => {
         if (!req.body.password) {
             return;
         }
         const { user } = req;
         if (!user) {
-            return Promise.reject('User token is incorrect');
+            return Promise.reject(req.t(Message.InvalidToken));
         }
         if (!currentPassword || await hashPassword(currentPassword, user.salt) !== user.password) {
-            return Promise.reject('Password does not match current');
+            return Promise.reject(req.t(Message.IncorrectPassword));
         }
     }),
-    colorHue: body('colorHue').optional().custom(async (color: unknown) => {
+    colorHue: body('colorHue').optional().custom(async (color: unknown, { req }) => {
         if (color === null) {
             return;
         }
         if (typeof color !== 'number') {
-            await Promise.reject('ColorHue should be numeric');
+            await Promise.reject(vt(Message.IsNumeric));
             return;
         }
         if (color < 0 || color > 360) {
-            await Promise.reject('ColorHue should be a number between 0 and 360');
+            await Promise.reject(req.t(Message.IsHue));
             return;
         }
     })
@@ -52,7 +54,7 @@ export const getUser = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
     const user = await UserRepository.getUserById(userId);
     if (!user) {
-        return res.status(StatusCode.ServerErrorInternal).json(wrapError('User is not found'));
+        return res.status(StatusCode.ServerErrorInternal).json(wrapError(req.t(Message.UserIsNotFound)));
     }
     const result = UserSerializer.serialize(user);
 
@@ -102,8 +104,9 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const loginValidation = [
-    validations.email,
-    validations.password,
+    validations.email.optional(false),
+    validations.password.optional(false),
+    validateResult,
 ];
 export const login = async (req: Request, res: Response) => {
     const user = await UserRepository.getUserByEmail(req.body.email);
@@ -111,7 +114,7 @@ export const login = async (req: Request, res: Response) => {
     const isPasswordMatch = user?.password === passwordHash;
 
     if (!user || !isPasswordMatch) {
-        return res.status(StatusCode.ClientErrorForbidden).json(wrapError('Email or password is incorrect'));
+        return res.status(StatusCode.ClientErrorForbidden).json(wrapError(req.t(Message.EmailOrPasswordIsIncorrect)));
     }
 
     const userInfo = UserSerializer.serialize(user);

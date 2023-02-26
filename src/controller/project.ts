@@ -7,6 +7,8 @@ import { Project } from '@prisma/client';
 import { ProjectRepository } from '../repository/projectRepository';
 import { wrapError, wrapListResult, wrapResult } from '../utils/resWrapper';
 import { MemberRepository } from '../repository/memberRepository';
+import { vt } from '../utils/translation';
+import { Message } from '../types/message';
 
 export const getProjects = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
@@ -16,7 +18,7 @@ export const getProjects = async (req: Request, res: Response) => {
 };
 
 export const createProjectValidation = [
-    body('name').trim().notEmpty(),
+    body('name').trim().notEmpty().withMessage(vt(Message.NotEmpty)),
     validateResult,
 ];
 export const createProject = async (req: Request, res: Response) => {
@@ -29,7 +31,7 @@ export const createProject = async (req: Request, res: Response) => {
 };
 
 export const updateProjectValidation = [
-    body('name').trim().notEmpty(),
+    body('name').trim().notEmpty().withMessage(vt(Message.NotEmpty)),
     validateResult,
 ];
 export const updateProject = async (req: Request, res: Response) => {
@@ -39,11 +41,11 @@ export const updateProject = async (req: Request, res: Response) => {
 
     const project = await ProjectRepository.getProjectByIdAndUserId(id, userId);
     if (!project) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.ProjectIsNotFound)));
     }
 
     if (project.ownerId !== userId) {
-        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Ask the project owner to update this project'));
+        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError(req.t(Message.AskProjectOwnerToUpdate)));
     }
 
     const updatedProject = await ProjectRepository.updateProject(project.id, name);
@@ -57,11 +59,11 @@ export const deleteProject = async (req: Request, res: Response) => {
 
     const project = await ProjectRepository.getProjectByIdAndUserId(id, userId);
     if (!project) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Project is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.ProjectIsNotFound)));
     }
 
     if (project.ownerId !== userId) {
-        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Ask the project owner to delete this project'));
+        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError(req.t(Message.AskProjectOwnerToDelete)));
     }
 
     const deletedProject = await ProjectRepository.deleteProject(project.id);

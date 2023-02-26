@@ -5,23 +5,24 @@ import { validationResult } from 'express-validator';
 import StatusCode from 'status-code-enum';
 import { wrapError, wrapValidationErrors } from '../utils/resWrapper';
 import { ResponseTimeFunction } from 'response-time';
+import { Message } from '../types/message';
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('X-TOKEN');
     if (token) {
         if (!isTokenValid(token)) {
-            return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Token is invalid'));
+            return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError(req.t(Message.InvalidToken)));
         }
 
         try {
             req.user = await UserRepository.getUserById(getUserId(token));
         } catch (e) {
-            return res.status(StatusCode.ServerErrorInternal).json(wrapError('Internal error'));
+            return res.status(StatusCode.ServerErrorInternal).json(wrapError(req.t(Message.InternalError)));
         }
     }
 
     if (!token || !req.user) {
-        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError('Token header is required'));
+        return res.status(StatusCode.ClientErrorUnauthorized).json(wrapError(req.t(Message.TokenHeaderIsRequired)));
     }
 
     next();

@@ -16,11 +16,13 @@ import {
 } from '../types/types';
 import { MemberRepository } from '../repository/memberRepository';
 import { TaskAssigneeSerializer } from '../serializer/taskAssigneeSerializer';
+import { vt } from '../utils/translation';
+import { Message } from '../types/message';
 
 export const getAllTasksValidation = [
-    query('assignee').optional().custom(async (value: string) => {
+    query('assignee').optional().custom(async (value: string, { req }) => {
         if (!value || !Object.values<string>(TaskAssigneeTo).includes(value)) {
-            await Promise.reject('Assignee param is incorrect');
+            await Promise.reject(req.t(Message.Incorrect));
         }
     }),
     validateResult
@@ -37,7 +39,7 @@ export const getTasks = async (req: Request, res: Response) => {
     const section = await SectionRepository.getSectionByIdAndUserId(sectionId, getUserIdByReq(req));
 
     if (!section) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Section is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.SectionIsNotFound)));
     }
 
     const tasks = await TaskRepository.getTasks(sectionId);
@@ -45,7 +47,7 @@ export const getTasks = async (req: Request, res: Response) => {
 };
 
 export const createTaskValidation = [
-    body('name').trim().notEmpty().withMessage('Name should not be empty'),
+    body('name').trim().notEmpty().withMessage(vt(Message.NotEmpty)),
     validateResult,
 ];
 
@@ -55,7 +57,7 @@ export const createTask = async (req: Request, res: Response) => {
     const name = req.body.name as string;
 
     if (!section) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Section is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.SectionIsNotFound)));
     }
 
     const position = await TaskRepository.getLastPosition(sectionId) || 0;
@@ -68,27 +70,27 @@ export const createTask = async (req: Request, res: Response) => {
 };
 
 export const updateTaskValidation = [
-    body('name').optional({ nullable: true }).trim().notEmpty().withMessage('Name should not be empty'),
-    body('position').optional({ nullable: true }).isNumeric().withMessage('Position should be numeric'),
-    body('description').optional({ nullable: true }).trim().isString().withMessage('Description should be of type String'),
-    body('dueDate').optional().custom(async (date: unknown) => {
+    body('name').optional({ nullable: true }).trim().notEmpty().withMessage(vt(Message.NotEmpty)),
+    body('position').optional({ nullable: true }).isNumeric().withMessage(vt(Message.IsNumeric)),
+    body('description').optional({ nullable: true }).trim().isString().withMessage(vt(Message.IsString)),
+    body('dueDate').optional().custom(async (date: unknown, { req }) => {
         if (date === null) {
             return;
         }
         if (typeof date !== 'string') {
-            await Promise.reject('Due Date should be a valid date');
+            await Promise.reject(req.t(Message.IsDate));
             return;
         }
         const dateObj = new Date(date);
         if (dateObj.toString() === 'Invalid Date' || isNaN(dateObj.valueOf())) {
-            await Promise.reject('Due Date should be a valid date');
+            await Promise.reject(req.t(Message.IsDate));
         }
     }).toDate(),
-    body('isCompleted').optional({ nullable: true }).isBoolean().withMessage('isCompleted should be of type Boolean'),
-    body('assignees').optional({ nullable: true }).isArray().bail().toArray().withMessage('Assignees should be type of Array')
-        .custom(async (assignees: unknown[]) => {
+    body('isCompleted').optional({ nullable: true }).isBoolean().withMessage(vt(Message.IsBoolean)),
+    body('assignees').optional({ nullable: true }).isArray().bail().toArray().withMessage(vt(Message.IsArray))
+        .custom(async (assignees: unknown[], { req }) => {
             if (!assignees.every(assignee => typeof assignee === 'string' && !!assignee)) {
-                await Promise.reject('Assignees should be array of non empty strings');
+                await Promise.reject(req.t(Message.IsArrayOfNotEmptyStrings));
             }
         }),
     validateResult,
@@ -99,7 +101,7 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
 
     const task = await TaskRepository.getTaskByIdAndUserId(taskId, userId);
     if (!task) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.TaskIsNotFound)));
     }
 
     const { name, description, dueDate, isCompleted, assignees } = req.body;
@@ -108,7 +110,7 @@ export const updateTask = async (req: Request<UpdateTaskRequestParams, object, U
     if (assignees) {
         const members = await MemberRepository.getMembersById(assignees);
         if (members.length !== assignees.length) {
-            return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Member(s) with given ids is not found'));
+            return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.MembersWithGivenIdIsNotFound)));
         }
     }
 
@@ -123,7 +125,7 @@ export const deleteTask = async (req: Request<UpdateTaskRequestParams, object, U
 
     const task = await TaskRepository.getTaskByIdAndUserId(taskId, userId);
     if (!task) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.TaskIsNotFound)));
     }
 
     const deletedTask = await TaskRepository.deleteTask(taskId);
@@ -135,14 +137,14 @@ export const assignMember = async (req: Request, res: Response) => {
     const { taskId } = req.params;
     const task = await TaskRepository.getTaskByIdAndUserId(taskId, getUserIdByReq(req));
     if (!task) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.TaskIsNotFound)));
     }
 
     const section = await SectionRepository.getSectionByTaskId(taskId);
     const member = await MemberRepository.getMemberById(req.body.memberId);
 
     if (!member || !section || member.projectId !== section.projectId) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Member is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.MemberIsNotFound)));
     }
 
     const assignee = await TaskRepository.assignMember(taskId, member.id);
@@ -156,7 +158,7 @@ export const removeAssignee = async (req: Request, res: Response) => {
 
     const assignee = await TaskRepository.getAssigneeByIdAndTaskId(assigneeId, taskId);
     if (!assignee) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Assignee is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.AssigneeIsNotFound)));
     }
 
     const removedAssignee = await TaskRepository.removeAssignee(assigneeId);
@@ -165,7 +167,7 @@ export const removeAssignee = async (req: Request, res: Response) => {
 };
 
 export const moveTaskValidation = [
-    body('position').optional({ nullable: true }).isNumeric().withMessage('Position should be numeric'),
+    body('position').optional({ nullable: true }).isNumeric().withMessage(vt(Message.IsNumeric)),
     validateResult
 ];
 export const moveTask = async (req: Request, res: Response) => {
@@ -173,23 +175,23 @@ export const moveTask = async (req: Request, res: Response) => {
     const { position = Number.MAX_SAFE_INTEGER } = req.body;
 
     if (position < 1 || position > Number.MAX_SAFE_INTEGER) {
-        return res.status(StatusCode.ClientErrorBadRequest).json(wrapError('Position is invalid'));
+        return res.status(StatusCode.ClientErrorBadRequest).json(wrapError(req.t(Message.PositionIsInvalid)));
     }
 
     const userId = getUserIdByReq(req);
     const task = await TaskRepository.getTaskByIdAndUserId(taskId, userId);
     if (!task) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.TaskIsNotFound)));
     }
 
     const section = await SectionRepository.getSectionByIdAndUserId(sectionId, userId);
     if (!section) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Section is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.SectionIsNotFound)));
     }
 
     const movedTask = await TaskRepository.moveTask(taskId, sectionId, position);
     if (!movedTask) {
-        return res.status(StatusCode.ServerErrorInternal).json(wrapError('Move task failed'));
+        return res.status(StatusCode.ServerErrorInternal).json(wrapError(req.t(Message.MoveTaskFailed)));
     }
     return res.json(wrapResult<TaskWithAssignees>(movedTask));
 };

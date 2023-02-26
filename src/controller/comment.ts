@@ -8,6 +8,8 @@ import { TaskRepository } from '../repository/taskRepository';
 import StatusCode from 'status-code-enum';
 import { body } from 'express-validator';
 import { validateResult } from '../middleware/middleware';
+import { vt } from '../utils/translation';
+import { Message } from '../types/message';
 
 export const getComments = async (req: Request, res: Response) => {
     const { taskId } = req.params;
@@ -29,7 +31,7 @@ export const getComments = async (req: Request, res: Response) => {
 };
 
 export const commentValidation = [
-    body('text').trim().notEmpty({ ignore_whitespace: true }).withMessage('Comment text should not be empty'),
+    body('text').trim().notEmpty({ ignore_whitespace: true }).withMessage(vt(Message.NotEmpty)),
     validateResult,
 ];
 
@@ -40,7 +42,7 @@ export const addComment = async (req: Request, res: Response) => {
 
     const task = await TaskRepository.getTaskByIdAndUserId(taskId, userId);
     if (!task) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Task is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.TaskIsNotFound)));
     }
 
     const comment = await CommentRepository.createComment(taskId, userId, text);
@@ -55,7 +57,7 @@ export const updateComment = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
 
     if (!await CommentRepository.isUserComment(commentId, userId)) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Comment is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.CommentIsNotFound)));
     }
 
     const comment = await CommentRepository.updateComment(commentId, text);
@@ -71,7 +73,7 @@ export const deleteComment = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
 
     if (!await CommentRepository.isUserComment(commentId, userId)) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Comment is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.CommentIsNotFound)));
     }
 
     const comment = await CommentRepository.deleteComment(commentId);
@@ -87,7 +89,7 @@ export const addCommentLike = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
 
     if (!await CommentRepository.hasAccessToProject(commentId, userId)) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Comment is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.CommentIsNotFound)));
     }
 
     const commentLike = await CommentRepository.addLike(commentId, userId);
@@ -106,12 +108,12 @@ export const deleteCommentLike = async (req: Request, res: Response) => {
     const userId = getUserIdByReq(req);
 
     if (!await CommentRepository.hasAccessToProject(commentId, userId)) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Comment is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.CommentIsNotFound)));
     }
 
     const commentLike = await CommentRepository.getCommentLikes(commentId);
     if (!commentLike) {
-        return res.status(StatusCode.ClientErrorNotFound).json(wrapError('Comment like is not found'));
+        return res.status(StatusCode.ClientErrorNotFound).json(wrapError(req.t(Message.CommentLikeIsNotFound)));
     }
 
     await CommentRepository.removeLike(commentId, userId);
