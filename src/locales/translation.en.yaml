@@ -13,7 +13,7 @@ validation.isArrayOfNotEmptyStrings: 'Should be array of non empty strings'
 validation.incorrectToken: 'Token is incorrect'
 validation.incorrectPassword: 'Password does not match current'
 validation.isHue: 'Should be a number between 0 and 360'
-
+validation.isObjectId: 'Should be a valid ObjectID'
 error.userIsNotFound: 'User is not found'
 error.taskIsNotFound: 'Task is not found'
 error.commentIsNotFound: 'Comment is not found'
