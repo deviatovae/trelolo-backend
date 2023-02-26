@@ -13,17 +13,17 @@ import { vt } from '../utils/translation';
 import { Message } from '../types/message';
 
 const validations = {
-    email: body('email').isEmail().withMessage(vt(Message.IsEmail)).bail(),
-    emailExist: body('email').custom(async (email: string, { req }) => {
+    email: () => body('email').isEmail().withMessage(vt(Message.IsEmail)).bail(),
+    emailExist: () => body('email').custom(async (email: string, { req }) => {
         return (await UserRepository.getUserByEmail(email)) ? Promise.reject(req.t(Message.EmailInUse)) : null;
     }),
-    name: body('name')
+    name: () => body('name')
         .trim()
         .notEmpty().withMessage(vt(Message.NotEmpty)).bail()
         .isLength({ min: 2 }).withMessage(vt(Message.MinLength2, { count: 2 })),
-    passwordRequirements: body('password').isLength({ min: 6 }).withMessage(vt(Message.MinLength6, { count: 6 })),
-    password: body('password').notEmpty().trim().withMessage(vt(Message.NotEmpty)).bail(),
-    currentPassword: body('currentPassword').trim().custom(async (currentPassword, { req }) => {
+    passwordRequirements: () => body('password').isLength({ min: 6 }).withMessage(vt(Message.MinLength6, { count: 6 })),
+    password: () => body('password').notEmpty().trim().withMessage(vt(Message.NotEmpty)).bail(),
+    currentPassword: () => body('currentPassword').trim().custom(async (currentPassword, { req }) => {
         if (!req.body.password) {
             return;
         }
@@ -35,7 +35,7 @@ const validations = {
             return Promise.reject(req.t(Message.IncorrectPassword));
         }
     }),
-    colorHue: body('colorHue').optional().custom(async (color: unknown, { req }) => {
+    colorHue: () => body('colorHue').optional().custom(async (color: unknown, { req }) => {
         if (color === null) {
             return;
         }
@@ -62,12 +62,12 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const createUserValidation = [
-    validations.email,
-    validations.emailExist,
-    validations.name,
-    validations.password,
-    validations.passwordRequirements,
-    validations.colorHue,
+    validations.email(),
+    validations.emailExist(),
+    validations.name(),
+    validations.password(),
+    validations.passwordRequirements(),
+    validations.colorHue(),
     validateResult,
 ];
 export const createUser = async (req: Request, res: Response) => {
@@ -82,11 +82,11 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUserValidation = [
-    validations.name.optional({ nullable: true }),
-    validations.password.optional(true).optional({ nullable: true }),
-    validations.passwordRequirements.optional({ nullable: true }),
-    validations.currentPassword,
-    validations.colorHue,
+    validations.name().optional({ nullable: true }),
+    validations.password().optional(true).optional({ nullable: true }),
+    validations.passwordRequirements().optional({ nullable: true }),
+    validations.currentPassword(),
+    validations.colorHue(),
     validateResult,
 ];
 
@@ -104,8 +104,8 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const loginValidation = [
-    validations.email,
-    validations.password,
+    validations.email(),
+    validations.password(),
     validateResult,
 ];
 export const login = async (req: Request, res: Response) => {
