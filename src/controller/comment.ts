@@ -36,7 +36,7 @@ export const getComments = async (req: Request, res: Response) => {
     return res.json(wrapListResult<CommentResult>(result));
 };
 
-export const commentValidation = [
+export const addCommentValidation = [
     param('taskId').custom(ObjectId.validator),
     body('text').trim().notEmpty({ ignore_whitespace: true }).withMessage(vt(Message.NotEmpty)),
     validateResult,
@@ -57,6 +57,12 @@ export const addComment = async (req: Request, res: Response) => {
 
     return res.json(wrapResult<CommentResult>(result));
 };
+
+export const updateCommentValidation = [
+    param('commentId').custom(ObjectId.validator),
+    body('text').trim().notEmpty({ ignore_whitespace: true }).withMessage(vt(Message.NotEmpty)),
+    validateResult,
+];
 
 export const updateComment = async (req: Request, res: Response) => {
     const { commentId } = req.params;

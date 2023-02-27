@@ -61,14 +61,15 @@ import {
     addComment,
     addCommentLike,
     addCommentLikeValidation,
-    commentValidation,
+    addCommentValidation,
     deleteComment,
     deleteCommentLike,
     deleteCommentLikeValidation,
     deleteCommentValidation,
     getComments,
     getCommentsValidation,
-    updateComment
+    updateComment,
+    updateCommentValidation
 } from './controller/comment';
 
 export const router = Router();
@@ -107,8 +108,8 @@ router.post('/tasks/:taskId/assignee', ...assignMemberValidation, wrapHandler(as
 router.delete('/tasks/:taskId/assignee/:assigneeId', ...removeAssigneeValidation, wrapHandler(removeAssignee));
 
 router.get('/tasks/:taskId/comments', ...getCommentsValidation, wrapHandler(getComments));
-router.post('/tasks/:taskId/comments', ...commentValidation, wrapHandler(addComment));
-router.patch('/comments/:commentId', ...commentValidation, wrapHandler(updateComment));
+router.post('/tasks/:taskId/comments', ...addCommentValidation, wrapHandler(addComment));
+router.patch('/comments/:commentId', ...updateCommentValidation, wrapHandler(updateComment));
 router.delete('/comments/:commentId', ...deleteCommentValidation, wrapHandler(deleteComment));
 router.post('/comments/:commentId/likes', ...addCommentLikeValidation, wrapHandler(addCommentLike));
 router.delete('/comments/:commentId/likes', ...deleteCommentLikeValidation, wrapHandler(deleteCommentLike));
