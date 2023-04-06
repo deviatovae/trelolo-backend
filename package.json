@@ -5,24 +5,44 @@
   "author": "Alena Deviatova",
   "license": "MIT",
   "scripts": {
-    "build": "npx tsc",
+    "build": "npx tsc;cp -r src/locales dist",
+    "lint": "eslint . --ext .ts",
     "serve": "node dist/index.js",
-    "start": "concurrently \"eslint . --ext .ts\" \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "start:serve": "ts-node ./src/index.ts",
+    "start": "./node_modules/nodemon/bin/nodemon.js"
   },
   "dependencies": {
+    "@prisma/client": "^4.10.1",
+    "@types/response-time": "^2.3.5",
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "express-validator": "^6.14.3",
+    "i18n": "^0.15.1",
+    "i18next": "^22.4.10",
+    "i18next-fs-backend": "^2.1.1",
+    "i18next-http-middleware": "^3.2.2",
+    "response-time": "^2.3.2",
+    "status-code-enum": "^1.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.16",
+    "@types/i18n": "^0.13.6",
+    "@types/i18next-fs-backend": "^1.1.2",
+    "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.48.2",
-    "@types/express": "^4.17.16",
-    "@types/node": "^18.11.18",
+    "concurrently": "^7.6.0",
     "eslint": "^8.32.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "concurrently": "^7.6.0",
     "nodemon": "^2.0.20",
+    "prisma": "^4.10.1",
+    "prisma-dbml-generator": "^0.10.0",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   }
 }

@@ -1,0 +1,110 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  email String [unique, not null]
+  name String [not null]
+  password String [not null]
+  salt String [not null]
+  colorHue Int
+  membership Member [not null]
+  projects Project [not null]
+  comments Comment [not null]
+}
+
+Table Project {
+  id String [pk]
+  name String [not null]
+  owner User [not null]
+  ownerId String [not null]
+  members Member [not null]
+  sections Section [not null]
+}
+
+Table Member {
+  id String [pk]
+  user User [not null]
+  userId String [not null]
+  project Project [not null]
+  projectId String [not null]
+  tasks Task2Member [not null]
+
+  indexes {
+    (userId, projectId) [unique]
+  }
+}
+
+Table Section {
+  id String [pk]
+  project Project [not null]
+  projectId String [not null]
+  name String [not null]
+  position Int [not null]
+  tasks Task [not null]
+}
+
+Table Task {
+  id String [pk]
+  section Section [not null]
+  sectionId String [not null]
+  name String [not null]
+  position Int [not null]
+  assignees Task2Member [not null]
+  description String
+  dueDate DateTime
+  isCompleted Boolean [not null, default: false]
+  comments Comment [not null]
+}
+
+Table Task2Member {
+  id String [pk]
+  member Member [not null]
+  memberId String [not null]
+  task Task [not null]
+  taskId String [not null]
+
+  indexes {
+    (taskId, memberId) [unique]
+  }
+}
+
+Table Comment {
+  id String [pk]
+  text String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime
+  task Task [not null]
+  taskId String [not null]
+  user User [not null]
+  userId String [not null]
+}
+
+Table CommentLike {
+  id String [pk]
+  commentId String [not null]
+  userId String [not null]
+
+  indexes {
+    (commentId, userId) [unique]
+  }
+}
+
+Ref: Project.ownerId > User.id
+
+Ref: Member.userId > User.id
+
+Ref: Member.projectId > Project.id [delete: Cascade]
+
+Ref: Section.projectId > Project.id [delete: Cascade]
+
+Ref: Task.sectionId > Section.id [delete: Cascade]
+
+Ref: Task2Member.memberId > Member.id [delete: Cascade]
+
+Ref: Task2Member.taskId > Task.id [delete: Cascade]
+
+Ref: Comment.taskId > Task.id [delete: Cascade]
+
+Ref: Comment.userId > User.id

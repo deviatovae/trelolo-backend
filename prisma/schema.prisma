@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  email      String      @unique
+  name       String
+  password   String
+  salt       String
+  colorHue   Int?
+  membership Member[]
+  projects   Project[]
+  comments   Comment[]
+}
+
+model Project {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  owner    User      @relation(fields: [ownerId], references: [id])
+  ownerId  String    @db.ObjectId
+  members  Member[]
+  sections Section[]
+}
+
+model Member {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String  @db.ObjectId
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String  @db.ObjectId
+  tasks     Task2Member[]
+  @@unique([userId, projectId], name: "user_project")
+}
+
+model Section {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String  @db.ObjectId
+  name      String
+  position  Int
+  tasks     Task[]
+}
+
+model Task {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  section     Section       @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sectionId   String        @db.ObjectId
+  name        String
+  position    Int
+  assignees   Task2Member[]
+  description String?
+  dueDate     DateTime?
+  isCompleted Boolean       @default(false)
+  comments    Comment[]
+}
+
+model Task2Member {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String @db.ObjectId
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId   String @db.ObjectId
+  @@unique([taskId, memberId], name: "task_member")
+}
+
+model Comment {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  text      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @db.ObjectId
+}
+
+model CommentLike {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  commentId String @db.ObjectId
+  userId    String @db.ObjectId
+
+  @@unique([commentId, userId], name: "comment_user")
+}
